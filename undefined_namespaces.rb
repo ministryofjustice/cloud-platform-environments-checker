@@ -78,7 +78,6 @@ class CloudPlatformOrphanNamespaces
       auth_options: context.auth_options
     )
 
-    pods = client.get_pods
     client.get_namespaces.map { |n| n.metadata.name }
   end
 
