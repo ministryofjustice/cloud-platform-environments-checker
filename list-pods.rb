@@ -8,27 +8,42 @@ require 'json'
 require 'pp'
 require 'pry-byebug'
 
-URL = 'https://api.github.com/repos/ministryofjustice/cloud-platform-environments/contents/namespaces/live-1.cloud-platform.service.justice.gov.uk'
+ENV_REPO_NAMESPACE_PATH = 'https://api.github.com/repos/ministryofjustice/cloud-platform-environments/contents/namespaces/live-1.cloud-platform.service.justice.gov.uk'
 
-content = open(URL).read
-git_namespaces = JSON.parse(content).map {|hash| hash.fetch('name')}
-pp git_namespaces
-exit
-
-config = Kubeclient::Config.read(ENV.fetch('KUBECONFIG'))
-context = config.context
-
-client = Kubeclient::Client.new(
-  context.api_endpoint,
-  'v1',
-  ssl_options: context.ssl_options,
-  auth_options: context.auth_options
+K8S_DEFAULT_NAMESPACES = %w(
+  cert-manager
+  default
+  ingress-controllers
+  kiam
+  kube-public
+  kube-system
+  kuberos
+  opa
 )
 
-pods = client.get_pods
-namespaces = client.get_namespaces
+def namespace_names_defined_in_git_repository
+  content = open(ENV_REPO_NAMESPACE_PATH).read
+  JSON.parse(content).map { |hash| hash.fetch('name') }
+end
 
-pry
+def namespace_names_in_k8s_cluster
+  config = Kubeclient::Config.read(ENV.fetch('KUBECONFIG'))
+  context = config.context
 
-1;
+  client = Kubeclient::Client.new(
+    context.api_endpoint,
+    'v1',
+    ssl_options: context.ssl_options,
+    auth_options: context.auth_options
+  )
+
+  pods = client.get_pods
+  client.get_namespaces.map { |n| n.metadata.name }
+end
+
+undefined_namespaces = namespace_names_in_k8s_cluster \
+  - namespace_names_defined_in_git_repository \
+  - K8S_DEFAULT_NAMESPACES
+
+pp undefined_namespaces
 
