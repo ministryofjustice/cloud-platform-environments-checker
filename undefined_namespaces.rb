@@ -8,7 +8,7 @@ require 'json'
 require 'pp'
 require 'pry-byebug'
 
-ENV_REPO_NAMESPACE_PATH = 'https://api.github.com/repos/ministryofjustice/cloud-platform-environments/contents/namespaces/live-1.cloud-platform.service.justice.gov.uk'
+ENV_REPO_NAMESPACE_PATH = "https://api.github.com/repos/ministryofjustice/cloud-platform-environments/contents/namespaces/#{ENV.fetch('PIPELINE_CLUSTER')}"
 
 K8S_DEFAULT_NAMESPACES = %w(
   cert-manager
