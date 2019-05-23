@@ -23,6 +23,28 @@ K8S_DEFAULT_NAMESPACES = %w(
   opa
 )
 
+def main
+  namespaces_with_tfstate = namespace_names_with_tfstate
+
+  namespace_names_with_no_source_code.each do |name|
+    puts "Namespace #{name} exists in the cluster but is not defined in the #{ENV_REPO} repository"
+
+    # If there is no terraform state associated with this namespace, then there
+    # are no AWS resources to clean up
+    # if namespaces_with_tfstate.include?(name)
+    #   puts "AWS Resources:"
+    #   aws_resources(name).each do |type, primary_id|
+    #     puts "  #{type}: #{primary_id}"
+    #   end
+    # end
+  end
+end
+
+def namespace_names_with_no_source_code
+  namespace_names_in_k8s_cluster - K8S_DEFAULT_NAMESPACES \
+    - namespace_names_defined_in_git_repository
+end
+
 def namespace_names_defined_in_git_repository
   content = open(ENV_REPO_NAMESPACE_PATH).read
   JSON.parse(content).map { |hash| hash.fetch('name') }
@@ -50,17 +72,12 @@ def namespace_names_with_tfstate
   s3 = Aws::S3::Client.new
   tf_objects = s3.list_objects(bucket: ENV.fetch('PIPELINE_STATE_BUCKET'))
 
-  tf_objects.contents.each do |obj|
+  tf_objects.contents.map do |obj|
     regexp = %r[#{ENV_REPO}/#{ENV.fetch('PIPELINE_CLUSTER')}/(.*)/terraform.tfstate]
     if regexp.match(obj.key)
-      puts $1
+      $1
     end
-  end
+  end.compact
 end
 
-namespace_names_with_tfstate
-
-# undefined_namespaces = namespace_names_in_k8s_cluster \
-#   - namespace_names_defined_in_git_repository \
-#   - K8S_DEFAULT_NAMESPACES
-
+main
