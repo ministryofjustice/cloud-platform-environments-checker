@@ -9,7 +9,8 @@ require 'json'
 require 'pp'
 require 'pry-byebug'
 
-ENV_REPO_NAMESPACE_PATH = "https://api.github.com/repos/ministryofjustice/cloud-platform-environments/contents/namespaces/#{ENV.fetch('PIPELINE_CLUSTER')}"
+ENV_REPO = 'cloud-platform-environments'
+ENV_REPO_NAMESPACE_PATH = "https://api.github.com/repos/ministryofjustice/#{ENV_REPO}/contents/namespaces/#{ENV.fetch('PIPELINE_CLUSTER')}"
 
 K8S_DEFAULT_NAMESPACES = %w(
   cert-manager
@@ -50,7 +51,7 @@ def namespace_names_with_tfstate
   tf_objects = s3.list_objects(bucket: ENV.fetch('PIPELINE_STATE_BUCKET'))
 
   tf_objects.contents.each do |obj|
-    regexp = %r[#{ENV.fetch('PIPELINE_STATE_KEY_PREFIX')}#{ENV.fetch('PIPELINE_CLUSTER')}/(.*)/terraform.tfstate]
+    regexp = %r[#{ENV_REPO}/#{ENV.fetch('PIPELINE_CLUSTER')}/(.*)/terraform.tfstate]
     if regexp.match(obj.key)
       puts $1
     end
