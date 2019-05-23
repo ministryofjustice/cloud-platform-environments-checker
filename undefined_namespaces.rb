@@ -4,6 +4,7 @@ require 'bundler/setup'
 require 'openid_connect'
 require 'kubeclient'
 require 'open-uri'
+require 'aws-sdk-s3'
 require 'json'
 require 'pp'
 require 'pry-byebug'
@@ -42,9 +43,23 @@ def namespace_names_in_k8s_cluster
   client.get_namespaces.map { |n| n.metadata.name }
 end
 
-undefined_namespaces = namespace_names_in_k8s_cluster \
-  - namespace_names_defined_in_git_repository \
-  - K8S_DEFAULT_NAMESPACES
+# If a namespace is defined in the terraform state for the cluster
+# it means there are AWS resources associated with it.
+def namespace_names_with_tfstate
+  s3 = Aws::S3::Client.new
+  tf_objects = s3.list_objects(bucket: ENV.fetch('PIPELINE_STATE_BUCKET'))
 
-pp undefined_namespaces
+  tf_objects.contents.each do |obj|
+    regexp = %r[#{ENV.fetch('PIPELINE_STATE_KEY_PREFIX')}#{ENV.fetch('PIPELINE_CLUSTER')}/(.*)/terraform.tfstate]
+    if regexp.match(obj.key)
+      puts $1
+    end
+  end
+end
+
+namespace_names_with_tfstate
+
+# undefined_namespaces = namespace_names_in_k8s_cluster \
+#   - namespace_names_defined_in_git_repository \
+#   - K8S_DEFAULT_NAMESPACES
 
