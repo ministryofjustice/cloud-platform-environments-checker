@@ -31,12 +31,13 @@ def main
 
     # If there is no terraform state associated with this namespace, then there
     # are no AWS resources to clean up
-    # if namespaces_with_tfstate.include?(name)
-    #   puts "AWS Resources:"
-    #   aws_resources(name).each do |type, primary_id|
-    #     puts "  #{type}: #{primary_id}"
-    #   end
-    # end
+    if namespaces_with_tfstate.include?(name)
+      puts "AWS Resources:"
+      # aws_resources(name).each do |type, primary_id|
+      #   puts "  #{type}: #{primary_id}"
+      # end
+    end
+    puts
   end
 end
 
@@ -80,4 +81,38 @@ def namespace_names_with_tfstate
   end.compact
 end
 
-main
+def aws_resources(namespace_name)
+  s3 = Aws::S3::Client.new
+  key = "#{ENV_REPO}/#{ENV.fetch('PIPELINE_CLUSTER')}/#{namespace_name}/terraform.tfstate"
+  tfstate = s3.get_object(bucket: ENV.fetch('PIPELINE_STATE_BUCKET'), key: key)
+  obj = JSON.parse tfstate.body.read
+
+  obj.fetch('modules').each do |tf_module|
+    resources = tf_module.fetch('resources')
+
+    resources.each do |resource|
+      if is_aws_resource?(resource)
+        hash = resource[1]
+        puts hash['type']
+        puts hash['primary']['id']
+      end
+    end
+
+    # aws_resource_types.each do |res_type|
+    #   puts "#{res_type}: #{tf_module.fetch('primary').fetch('id')}"
+    # end
+  end
+end
+
+# resource_hash usually has a single key, its name,
+# and a hash of data as the value.
+def is_aws_resource?(resource_hash)
+  resource_hash.each do |name, hash|
+    if name =~ /^aws_/
+      return true
+    end
+  end
+  false
+end
+
+aws_resources 'vv-test'
