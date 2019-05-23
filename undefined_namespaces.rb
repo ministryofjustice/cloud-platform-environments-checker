@@ -33,9 +33,9 @@ def main
     # are no AWS resources to clean up
     if namespaces_with_tfstate.include?(name)
       puts "AWS Resources:"
-      # aws_resources(name).each do |type, primary_id|
-      #   puts "  #{type}: #{primary_id}"
-      # end
+      aws_resources(name).each do |res|
+        puts "  #{res[:type]}: #{res[:id]}"
+      end
     end
     puts
   end
@@ -87,20 +87,23 @@ def aws_resources(namespace_name)
   tfstate = s3.get_object(bucket: ENV.fetch('PIPELINE_STATE_BUCKET'), key: key)
   obj = JSON.parse tfstate.body.read
 
+  rtn = []
+
   obj.fetch('modules').each do |tf_module|
-    resources = tf_module.fetch('resources')
-
-    resources.each do |resource|
-      if is_aws_resource?(resource)
-        hash = resource[1]
-        puts hash['type']
-        puts hash['primary']['id']
-      end
+    tf_module.fetch('resources').each do |resource|
+      rtn << get_aws_type_and_id(resource)
     end
+  end
 
-    # aws_resource_types.each do |res_type|
-    #   puts "#{res_type}: #{tf_module.fetch('primary').fetch('id')}"
-    # end
+  rtn.compact
+end
+
+def get_aws_type_and_id(resource)
+  if is_aws_resource?(resource)
+    hash = resource[1]
+    { type: hash['type'], id: hash['primary']['id'] }
+  else
+    nil
   end
 end
 
@@ -115,4 +118,4 @@ def is_aws_resource?(resource_hash)
   false
 end
 
-aws_resources 'vv-test'
+main
