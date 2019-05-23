@@ -6,8 +6,6 @@ require 'kubeclient'
 require 'open-uri'
 require 'aws-sdk-s3'
 require 'json'
-require 'pp'
-require 'pry-byebug'
 
 class CloudPlatformOrphanNamespaces
 
