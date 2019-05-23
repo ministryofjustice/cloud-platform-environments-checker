@@ -27,6 +27,7 @@ def namespace_names_defined_in_git_repository
 end
 
 def namespace_names_in_k8s_cluster
+  # TODO: fix this - we won't have current context in the pipeline
   config = Kubeclient::Config.read(ENV.fetch('KUBECONFIG'))
   context = config.context
 
