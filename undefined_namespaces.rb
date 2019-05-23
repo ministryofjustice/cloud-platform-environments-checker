@@ -25,16 +25,22 @@ K8S_DEFAULT_NAMESPACES = %w(
 
 def main
   namespaces_with_tfstate = namespace_names_with_tfstate
+  orphan_namespaces = namespace_names_with_no_source_code
 
-  namespace_names_with_no_source_code.each do |name|
-    puts "Namespace #{name} exists in the cluster but is not defined in the #{ENV_REPO} repository"
+  if orphan_namespaces.any?
+    puts "Namespaces in cluster with no source code in the #{ENV_REPO} repository:"
+    puts
+  end
+
+  orphan_namespaces.each do |name|
+    puts name
 
     # If there is no terraform state associated with this namespace, then there
     # are no AWS resources to clean up
     if namespaces_with_tfstate.include?(name)
-      puts "AWS Resources:"
+      puts "  AWS Resources:"
       aws_resources(name).each do |res|
-        puts "  #{res[:type]}: #{res[:id]}"
+        puts "    #{res[:type]}: #{res[:id]}"
       end
     end
     puts
