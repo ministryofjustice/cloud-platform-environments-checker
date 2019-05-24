@@ -17,7 +17,8 @@ class ClusterNamespaceLister
   end
 
   def namespace_names
-    # TODO: fix this - we won't have current context in the pipeline
+    # This will always use whatever is the current context
+    # in the kube config file
     context = kubeconfig.context
 
     client = Kubeclient::Client.new(
