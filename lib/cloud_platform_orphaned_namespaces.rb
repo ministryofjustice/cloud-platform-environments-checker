@@ -7,8 +7,8 @@ class CloudPlatformOrphanNamespaces
     kiam
     kube-public
     kube-system
-    opa
     kuberos
+    opa
   )
 
   def initialize(args = {})
