@@ -51,7 +51,7 @@ class CloudPlatformOrphanNamespaces
 
   def report
     rtn = []
-    namespaces_with_tfstate = @tfstate_lister.namespace_names
+    namespaces_with_tfstate = @tfstate_lister.namespaces.map(&:name)
     orphan_namespaces = namespace_names_with_no_source_code
 
     if orphan_namespaces.any?

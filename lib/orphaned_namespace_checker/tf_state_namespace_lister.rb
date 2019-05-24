@@ -1,6 +1,8 @@
 class TFStateNamespaceLister
   attr_reader :bucket, :bucket_prefix, :s3client
 
+  TFState = Struct.new(:name, :aws_resources)
+
   def initialize(args)
     @bucket        = args.fetch(:bucket)
     @bucket_prefix = args.fetch(:bucket_prefix)
@@ -15,13 +17,13 @@ class TFStateNamespaceLister
 
   # If a namespace is defined in the terraform state for the cluster
   # it means there are AWS resources associated with it.
-  def namespace_names
+  def namespaces
     tf_objects = s3client.list_objects(bucket: bucket)
 
     tf_objects.contents.map do |obj|
       regexp = %r[#{bucket_prefix}/(.*)/terraform.tfstate]
       if regexp.match(obj.key)
-        $1
+        TFState.new($1)
       end
     end.compact
   end
