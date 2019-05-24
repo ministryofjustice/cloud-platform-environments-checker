@@ -4,6 +4,10 @@ VERSION := 1.0
 build:
 	docker build -t $(IMAGE) .
 
+push:
+	docker tag $(IMAGE) ministryofjustice/$(IMAGE):$(VERSION)
+	docker push ministryofjustice/$(IMAGE):$(VERSION)
+
 # This expects to find a kube config file in ./kubecfg/config
 run:
 	docker run \
