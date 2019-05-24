@@ -1,4 +1,6 @@
 class CloudPlatformOrphanNamespaces
+  attr_reader :bucket_prefix
+
   def initialize(args = {})
     @github_lister = args.fetch(
       :github_lister,
@@ -12,7 +14,7 @@ class CloudPlatformOrphanNamespaces
       :tfstate_lister,
       TFStateNamespaceLister.new(
         bucket: ENV.fetch('PIPELINE_STATE_BUCKET'),
-        bucket_prefix: "cloud-platform-environments/#{ENV.fetch('PIPELINE_CLUSTER')}"
+        bucket_prefix: ENV.fetch('BUCKET_PREFIX')
       )
     )
 
@@ -21,6 +23,8 @@ class CloudPlatformOrphanNamespaces
       ClusterNamespaceLister.new(kubeconfig: ENV.fetch('KUBECONFIG')
       )
     )
+
+    @bucket_prefix = ENV.fetch('BUCKET_PREFIX')
 
     @env_repo     = 'cloud-platform-environments'
     @state_bucket = ENV.fetch('PIPELINE_STATE_BUCKET')
@@ -67,7 +71,7 @@ class CloudPlatformOrphanNamespaces
   end
 
   def aws_resources(namespace_name)
-    key = "#{@env_repo}/#{@cluster}/#{namespace_name}/terraform.tfstate"
+    key = "#{bucket_prefix}/#{namespace_name}/terraform.tfstate"
     tfstate = @s3client.get_object(bucket: @state_bucket, key: key)
     obj = JSON.parse tfstate.body.read
 
