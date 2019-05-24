@@ -1,5 +1,8 @@
+IMAGE := orphaned-namespace-checker
+VERSION := 1.0
+
 build:
-	docker build -t orphaned-namespace-checker .
+	docker build -t $(IMAGE) .
 
 # This expects to find a kube config file in ./kubecfg/config
 run:
