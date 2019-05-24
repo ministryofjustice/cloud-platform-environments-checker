@@ -28,27 +28,29 @@ class CloudPlatformOrphanNamespaces
   end
 
   def report
+    rtn = []
     namespaces_with_tfstate = namespace_names_with_tfstate
     orphan_namespaces = namespace_names_with_no_source_code
 
     if orphan_namespaces.any?
-      puts "Namespaces in cluster with no source code in the #{@env_repo} repository:"
-      puts
+      rtn << "Namespaces in cluster with no source code in the #{@env_repo} repository:\n"
     end
 
     orphan_namespaces.each do |name|
-      puts name
+      rtn << name
 
       # If there is no terraform state associated with this namespace, then there
       # are no AWS resources to clean up
       if namespaces_with_tfstate.include?(name)
-        puts "  AWS Resources:"
+        rtn << "  AWS Resources:"
         aws_resources(name).each do |res|
-          puts "    #{res[:type]}: #{res[:id]}"
+          rtn << "    #{res[:type]}: #{res[:id]}"
         end
       end
-      puts
+      rtn << "\n"
     end
+
+    rtn.join("\n")
   end
 
   private

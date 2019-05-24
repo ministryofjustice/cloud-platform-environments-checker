@@ -2,4 +2,4 @@
 
 require './lib/orphaned_namespace_checker'
 
-CloudPlatformOrphanNamespaces.new.report
+puts CloudPlatformOrphanNamespaces.new.report
