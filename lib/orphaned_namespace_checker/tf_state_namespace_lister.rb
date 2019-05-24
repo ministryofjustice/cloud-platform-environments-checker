@@ -1,6 +1,8 @@
 class TFStateNamespaceLister
   attr_reader :bucket, :bucket_prefix, :s3client
 
+  FILTERED_AWS_RESOURCES = ['aws_iam_access_key']
+
   TFState = Struct.new(:name, :aws_resources)
 
   def initialize(args)
@@ -50,6 +52,7 @@ class TFStateNamespaceLister
   def get_aws_type_and_id(resource)
     if is_aws_resource?(resource)
       hash = resource[1]
+      return nil if FILTERED_AWS_RESOURCES.include?(hash['type'])
       { type: hash['type'], id: hash['primary']['id'] }
     else
       nil
