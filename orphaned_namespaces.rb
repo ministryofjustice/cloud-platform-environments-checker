@@ -62,7 +62,9 @@ class CloudPlatformOrphanNamespaces
   def namespace_names_defined_in_git_repository
     env_repo_namespace_path = "https://api.github.com/repos/ministryofjustice/#{@env_repo}/contents/namespaces/#{@cluster}"
     content = open(env_repo_namespace_path).read
-    JSON.parse(content).map { |hash| hash.fetch('name') }
+    names = JSON.parse(content).map { |hash| hash.fetch('name') }
+    raise "No github repositories returned. Aborting" if names.empty?
+    names
   end
 
   def namespace_names_in_k8s_cluster
