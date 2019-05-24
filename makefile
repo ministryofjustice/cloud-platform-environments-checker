@@ -1,5 +1,5 @@
 IMAGE := orphaned-namespace-checker
-VERSION := 1.3
+VERSION := 1.4
 
 build:
 	docker build -t $(IMAGE) .
@@ -13,6 +13,7 @@ run:
 	docker run \
 		-v $$(pwd)/kubecfg:/app/.kube \
 		-e KUBECONFIG=/app/.kube/config \
+		-e KUBECONTEXT=$${KUBECONTEXT} \
 		-e AWS_REGION=$${AWS_REGION} \
 		-e AWS_ACCESS_KEY_ID=$${AWS_ACCESS_KEY_ID} \
 		-e AWS_SECRET_ACCESS_KEY=$${AWS_SECRET_ACCESS_KEY} \
