@@ -5,6 +5,7 @@ require 'open-uri'
 require 'aws-sdk-s3'
 require 'json'
 
-require './lib/GithubNamespaceLister'
+require './lib/cloud_platform_orphaned_namespaces'
+require './lib/github_namespace_lister'
 
 require 'pp'
