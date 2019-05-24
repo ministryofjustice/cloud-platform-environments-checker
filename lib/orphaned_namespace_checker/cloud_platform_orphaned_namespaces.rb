@@ -51,21 +51,19 @@ class CloudPlatformOrphanNamespaces
 
   def report
     rtn = []
-    namespaces_with_tfstate = @tfstate_lister.namespaces.map(&:name)
-    orphan_namespaces = namespace_names_with_no_source_code
+    namespaces_with_tfstate = @tfstate_lister.namespaces
+    orphan_namespace_names = namespace_names_with_no_source_code
 
-    if orphan_namespaces.any?
+    if orphan_namespace_names.any?
       rtn << "Namespaces in cluster with no source code in the #{@env_repo} repository:\n"
     end
 
-    orphan_namespaces.each do |name|
+    orphan_namespace_names.each do |name|
       rtn << name
-
-      # If there is no terraform state associated with this namespace, then there
-      # are no AWS resources to clean up
-      if namespaces_with_tfstate.include?(name)
+      tfstate = namespaces_with_tfstate.find {|n| n.name == name}
+      if tfstate && tfstate.aws_resources.any?
         rtn << "  AWS Resources:"
-        aws_resources(name).each do |res|
+        tfstate.aws_resources.each do |res|
           rtn << "    #{res[:type]}: #{res[:id]}"
         end
       end
@@ -85,43 +83,6 @@ class CloudPlatformOrphanNamespaces
     names = @github_lister.namespace_names
     raise "No github repositories returned. Aborting" if names.empty?
     names
-  end
-
-  # TODO: move this into the terraform state class
-  def aws_resources(namespace_name)
-    key = "#{bucket_prefix}/#{namespace_name}/terraform.tfstate"
-    tfstate = @tfstate_s3.get_object(bucket: @state_bucket, key: key)
-    obj = JSON.parse tfstate.body.read
-
-    rtn = []
-
-    obj.fetch('modules').each do |tf_module|
-      tf_module.fetch('resources').each do |resource|
-        rtn << get_aws_type_and_id(resource)
-      end
-    end
-
-    rtn.compact
-  end
-
-  def get_aws_type_and_id(resource)
-    if is_aws_resource?(resource)
-      hash = resource[1]
-      { type: hash['type'], id: hash['primary']['id'] }
-    else
-      nil
-    end
-  end
-
-  # resource_hash usually has a single key, its name,
-  # and a hash of data as the value.
-  def is_aws_resource?(resource_hash)
-    resource_hash.each do |name, hash|
-      if name =~ /^aws_/
-        return true
-      end
-    end
-    false
   end
 
   # Get the kube config file from S3 and put it somewhere
