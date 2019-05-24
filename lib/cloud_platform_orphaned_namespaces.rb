@@ -1,16 +1,4 @@
 class CloudPlatformOrphanNamespaces
-
-  K8S_DEFAULT_NAMESPACES = %w(
-    cert-manager
-    default
-    ingress-controllers
-    kiam
-    kube-public
-    kube-system
-    kuberos
-    opa
-  )
-
   def initialize(args = {})
     @github_lister = args.fetch(
       :github_lister,
@@ -28,16 +16,21 @@ class CloudPlatformOrphanNamespaces
       )
     )
 
+    @cluster_lister = args.fetch(
+      :cluster_lister,
+      ClusterNamespaceLister.new(kubeconfig: ENV.fetch('KUBECONFIG')
+      )
+    )
+
     @env_repo     = 'cloud-platform-environments'
     @state_bucket = ENV.fetch('PIPELINE_STATE_BUCKET')
     @cluster      = ENV.fetch('PIPELINE_CLUSTER')
-    @kubeconfig   = Kubeclient::Config.read(ENV.fetch('KUBECONFIG'))
     @s3client     = Aws::S3::Client.new
   end
 
   def report
     rtn = []
-    namespaces_with_tfstate = namespace_names_with_tfstate
+    namespaces_with_tfstate = @tfstate_lister.namespace_names
     orphan_namespaces = namespace_names_with_no_source_code
 
     if orphan_namespaces.any?
@@ -64,32 +57,13 @@ class CloudPlatformOrphanNamespaces
   private
 
   def namespace_names_with_no_source_code
-    namespace_names_in_k8s_cluster - K8S_DEFAULT_NAMESPACES \
-      - namespace_names_defined_in_git_repository
+    @cluster_lister.namespace_names - namespace_names_defined_in_git_repository
   end
 
   def namespace_names_defined_in_git_repository
     names = @github_lister.namespace_names
     raise "No github repositories returned. Aborting" if names.empty?
     names
-  end
-
-  def namespace_names_in_k8s_cluster
-    # TODO: fix this - we won't have current context in the pipeline
-    context = @kubeconfig.context
-
-    client = Kubeclient::Client.new(
-      context.api_endpoint,
-      'v1',
-      ssl_options: context.ssl_options,
-      auth_options: context.auth_options
-    )
-
-    client.get_namespaces.map { |n| n.metadata.name }
-  end
-
-  def namespace_names_with_tfstate
-    @tfstate_lister.namespace_names
   end
 
   def aws_resources(namespace_name)

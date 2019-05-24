@@ -8,5 +8,6 @@ require 'json'
 require './lib/cloud_platform_orphaned_namespaces'
 require './lib/github_namespace_lister'
 require './lib/tf_state_namespace_lister'
+require './lib/cluster_namespace_lister'
 
 require 'pp'
