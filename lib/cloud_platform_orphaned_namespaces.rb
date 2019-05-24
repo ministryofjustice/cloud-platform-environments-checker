@@ -20,6 +20,14 @@ class CloudPlatformOrphanNamespaces
       )
     )
 
+    @tfstate_lister = args.fetch(
+      :tfstate_lister,
+      TFStateNamespaceLister.new(
+        bucket: ENV.fetch('PIPELINE_STATE_BUCKET'),
+        bucket_prefix: "cloud-platform-environments/#{ENV.fetch('PIPELINE_CLUSTER')}"
+      )
+    )
+
     @env_repo     = 'cloud-platform-environments'
     @state_bucket = ENV.fetch('PIPELINE_STATE_BUCKET')
     @cluster      = ENV.fetch('PIPELINE_CLUSTER')
@@ -80,17 +88,8 @@ class CloudPlatformOrphanNamespaces
     client.get_namespaces.map { |n| n.metadata.name }
   end
 
-  # If a namespace is defined in the terraform state for the cluster
-  # it means there are AWS resources associated with it.
   def namespace_names_with_tfstate
-    tf_objects = @s3client.list_objects(bucket: @state_bucket)
-
-    tf_objects.contents.map do |obj|
-      regexp = %r[#{@env_repo}/#{@cluster}/(.*)/terraform.tfstate]
-      if regexp.match(obj.key)
-        $1
-      end
-    end.compact
+    @tfstate_lister.namespace_names
   end
 
   def aws_resources(namespace_name)
