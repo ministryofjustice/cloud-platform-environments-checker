@@ -59,7 +59,9 @@ class CloudPlatformOrphanNamespaces
   end
 
   def namespace_names_defined_in_git_repository
-    @github_lister.namespace_names
+    names = @github_lister.namespace_names
+    raise "No github repositories returned. Aborting" if names.empty?
+    names
   end
 
   def namespace_names_in_k8s_cluster

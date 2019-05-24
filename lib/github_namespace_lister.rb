@@ -9,8 +9,6 @@ class GithubNamespaceLister
   def namespace_names
     env_repo_namespace_path = "https://api.github.com/repos/ministryofjustice/#{env_repo}/contents/namespaces/#{cluster_name}"
     content = open(env_repo_namespace_path).read
-    names = JSON.parse(content).map { |hash| hash.fetch('name') }
-    raise "No github repositories returned. Aborting" if names.empty?
-    names
+    JSON.parse(content).map { |hash| hash.fetch('name') }
   end
 end
