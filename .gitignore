@@ -1,2 +1,5 @@
 .bundle
 .env
+.dockerignore
+.env.live0
+.env.live1
