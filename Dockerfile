@@ -11,12 +11,13 @@ WORKDIR /app
 
 COPY Gemfile Gemfile.lock ./
 
-RUN bundle install --without development
+RUN bundle install --without development test
 
-COPY orphaned_namespaces.rb ./
+COPY lib ./lib
+COPY bin ./bin
 
 RUN chown -R appuser:appgroup /app
 
 USER 1000
 
-CMD ["ruby", "orphaned_namespaces.rb"]
+CMD ["ruby", "/app/bin/orphaned_namespaces.rb"]
