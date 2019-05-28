@@ -4,6 +4,8 @@ class CloudPlatformOrphanNamespaces
   def initialize(args = {})
     @cluster_name = ENV.fetch('PIPELINE_CLUSTER')
 
+    # The terraform state for live-0 is stored in S3 under the AWS Platform Integration account
+    # The terraform state for live-1 is stored in S3 under the AWS Cloud Platform account
     @tfstate_s3 = Aws::S3::Client.new(
       region: ENV.fetch('TFSTATE_AWS_REGION'),
       credentials: Aws::Credentials.new(
@@ -12,6 +14,7 @@ class CloudPlatformOrphanNamespaces
       )
     )
 
+    # The kubernetes config file is stored in S3 under the AWS Cloud Platform account
     @kubeconfig_s3 = Aws::S3::Client.new(
       region: ENV.fetch('KUBECONFIG_AWS_REGION'),
       credentials: Aws::Credentials.new(
