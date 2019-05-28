@@ -1,7 +1,9 @@
 class CloudPlatformOrphanNamespaces
-  attr_reader :bucket_prefix, :tfstate_s3, :kubeconfig_s3
+  attr_reader :bucket_prefix, :tfstate_s3, :kubeconfig_s3, :cluster_name
 
   def initialize(args = {})
+    @cluster_name = ENV.fetch('PIPELINE_CLUSTER')
+
     @tfstate_s3 = Aws::S3::Client.new(
       region: ENV.fetch('TFSTATE_AWS_REGION'),
       credentials: Aws::Credentials.new(
@@ -26,7 +28,7 @@ class CloudPlatformOrphanNamespaces
       :github_lister,
       GithubNamespaceLister.new(
         env_repo: 'cloud-platform-environments',
-        cluster_name: ENV.fetch('PIPELINE_CLUSTER')
+        cluster_name: cluster_name
       )
     )
 
@@ -55,7 +57,7 @@ class CloudPlatformOrphanNamespaces
     orphan_namespace_names = namespace_names_with_no_source_code
 
     if orphan_namespace_names.any?
-      rtn << "Namespaces in cluster with no source code in the #{@env_repo} repository:\n"
+      rtn << "Namespaces in cluster #{cluster_name} with no source code in the #{@env_repo} repository:\n"
     end
 
     orphan_namespace_names.each do |name|
