@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-require './lib/orphaned_namespace_checker'
+require "#{File.dirname(__FILE__)}/../lib/orphaned_namespace_checker"
 
 # Concourse will create the 'output' directory during the
 # 'check-environments' pipeline task. It will do so as root,
