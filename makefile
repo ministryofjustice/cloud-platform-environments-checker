@@ -24,4 +24,4 @@ run:
 	 -e KUBECONFIG_AWS_REGION=$${KUBECONFIG_AWS_REGION} \
 	 -e KUBECONFIG_AWS_ACCESS_KEY_ID=$${KUBECONFIG_AWS_ACCESS_KEY_ID} \
 	 -e KUBECONFIG_AWS_SECRET_ACCESS_KEY=$${KUBECONFIG_AWS_SECRET_ACCESS_KEY} \
-		orphaned-namespace-checker
+		orphaned-namespace-checker sh -c 'mkdir output; /app/bin/orphaned_namespaces.rb; cat output/check.txt'
