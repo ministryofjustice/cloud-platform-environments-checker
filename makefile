@@ -1,5 +1,5 @@
 IMAGE := orphaned-namespace-checker
-VERSION := 1.9
+VERSION := 1.19
 
 build:
 	docker build -t $(IMAGE) .
