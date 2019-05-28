@@ -12,4 +12,3 @@ RUN bundle install --without development test
 
 COPY lib ./lib
 COPY bin ./bin
-CMD ["ruby", "/app/bin/orphaned_namespaces.rb"]
