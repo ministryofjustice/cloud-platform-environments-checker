@@ -11,18 +11,22 @@ PIPELINE_STATE_REGION = 'eu-west-1'
 PIPELINE_CLUSTER = 'cloud-platform-live-0.k8s.integration.dsd.io'
 
 def main(namespace)
+  check_prerequisites(namespace)
+
   puts
   puts "About to delete AWS resources for namespace: ${namespace}"
   puts
-
-  # Ensure we have AWS credentials
-  ENV.fetch('TFSTATE_AWS_ACCESS_KEY_ID')
-  ENV.fetch('TFSTATE_AWS_SECRET_ACCESS_KEY')
 
   system("rm -rf .terraform main.tf") # clean up any leftover artefacts from prior invocations
   add_main_tf
   tf_init namespace
   system('terraform plan')
+end
+
+def check_prerequisites(namespace)
+  # Ensure we have AWS credentials
+  ENV.fetch('TFSTATE_AWS_ACCESS_KEY_ID')
+  ENV.fetch('TFSTATE_AWS_SECRET_ACCESS_KEY')
 end
 
 def add_main_tf
