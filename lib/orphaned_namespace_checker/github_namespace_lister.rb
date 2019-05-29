@@ -6,6 +6,10 @@ class GithubNamespaceLister
     @cluster_name = args.fetch(:cluster_name)
   end
 
+  def namespace_exists?(namespace)
+    namespace_names.include?(namespace)
+  end
+
   def namespace_names
     env_repo_namespace_path = "https://api.github.com/repos/ministryofjustice/#{env_repo}/contents/namespaces/#{cluster_name}"
     content = open(env_repo_namespace_path).read
