@@ -5,6 +5,8 @@ require "#{File.dirname(__FILE__)}/../lib/orphaned_namespace_checker"
 # This is the 'empty' main.tf file that we add, by default, to any namespaces users create
 CANONICAL_MAIN_TF_URL = 'https://raw.githubusercontent.com/ministryofjustice/cloud-platform-environments/master/namespace-resources/resources-main-tf'
 
+ENVIRONMENTS_GITHUB_REPO = 'cloud-platform-environments'
+
 # TODO: get from env. vars.
 PIPELINE_STATE_BUCKET = 'moj-cp-k8s-investigation-environments-terraform'
 PIPELINE_STATE_REGION = 'eu-west-1'
@@ -24,9 +26,18 @@ def main(namespace)
 end
 
 def check_prerequisites(namespace)
+  raise "Namespace #{namespace} exists in the environments github repo\nAborting." if namespace_defined_in_code?(namespace)
+
   # Ensure we have AWS credentials
   ENV.fetch('TFSTATE_AWS_ACCESS_KEY_ID')
   ENV.fetch('TFSTATE_AWS_SECRET_ACCESS_KEY')
+end
+
+def namespace_defined_in_code?(namespace)
+  GithubNamespaceLister.new(
+    env_repo: ENVIRONMENTS_GITHUB_REPO,
+    cluster_name: ENV.fetch('PIPELINE_CLUSTER')
+  ).namespace_exists?(namespace)
 end
 
 def add_main_tf
