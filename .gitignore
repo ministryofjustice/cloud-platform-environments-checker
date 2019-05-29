@@ -3,3 +3,5 @@
 .dockerignore
 .env.live0
 .env.live1
+.terraform
+main.tf
