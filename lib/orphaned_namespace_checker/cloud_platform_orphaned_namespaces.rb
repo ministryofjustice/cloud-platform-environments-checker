@@ -1,10 +1,12 @@
 class CloudPlatformOrphanNamespaces
   attr_reader :bucket_prefix, :cluster_name
 
+  ENVIRONMENTS_REPO = 'cloud-platform-environments'
+
   def initialize(args = {})
+    @env_repo      = ENVIRONMENTS_REPO,
     @cluster_name  = env('PIPELINE_CLUSTER')
     @bucket_prefix = env('BUCKET_PREFIX')
-    @env_repo      = 'cloud-platform-environments'
     @state_bucket  = env('PIPELINE_STATE_BUCKET')
 
     local_kubeconfig = env('KUBECONFIG')
