@@ -1,5 +1,5 @@
 IMAGE := orphaned-namespace-checker
-VERSION := 2.3
+VERSION := 2.5
 
 # This is the 'empty' main.tf file that we add, by default, to any namespaces users create
 CANONICAL_MAIN_TF_URL = 'https://raw.githubusercontent.com/ministryofjustice/cloud-platform-environments/master/namespace-resources/resources-main-tf'
@@ -37,7 +37,13 @@ list-orphaned-namespaces:
 # USAGE:
 # Set your environment variables (see example.env.live-0 & example.env.live-1), then:
 #
+# This will just do a 'terraform plan' to show you what would be destroyed
+#
 #     NAMESPACE=foo make delete-aws-resources
+#
+# To ACTUALLY DELETE AWS RESOURCES with no confirmation step, do this:
+#
+#     NAMESPACE=foo DESTROY=destroy make delete-aws-resources
 #
 delete-aws-resources:
 	docker run \
@@ -54,7 +60,7 @@ delete-aws-resources:
 	 -e KUBECONFIG_AWS_REGION=$${KUBECONFIG_AWS_REGION} \
 	 -e KUBECONFIG_AWS_ACCESS_KEY_ID=$${KUBECONFIG_AWS_ACCESS_KEY_ID} \
 	 -e KUBECONFIG_AWS_SECRET_ACCESS_KEY=$${KUBECONFIG_AWS_SECRET_ACCESS_KEY} \
-		orphaned-namespace-checker sh -c "mkdir output; /app/bin/delete-aws-resources.rb $${NAMESPACE}"
+		orphaned-namespace-checker sh -c "mkdir output; /app/bin/delete-aws-resources.rb $${NAMESPACE} $${DESTROY}"
 
 ##
 ## Usage examples for local development:
@@ -65,7 +71,12 @@ namespaces:
 	. .env.live0; ./bin/orphaned_namespaces.rb
 	cat output/check.txt
 
-delete:
+plan:
 	. .env.live0; \
 	export TERRAFORM_PATH=$$(dirname $$(which terraform)); \
-	./bin/delete-aws-resources.rb myapp-dev
+	./bin/delete-aws-resources.rb jenny-myapp-dev
+
+destroy:
+	. .env.live0; \
+	export TERRAFORM_PATH=$$(dirname $$(which terraform)); \
+	./bin/delete-aws-resources.rb jenny-myapp-dev destroy

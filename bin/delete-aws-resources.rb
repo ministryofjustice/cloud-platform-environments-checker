@@ -4,7 +4,7 @@ require "#{File.dirname(__FILE__)}/../lib/orphaned_namespace_checker"
 
 ENVIRONMENTS_GITHUB_REPO = 'cloud-platform-environments'
 
-def main(namespace)
+def main(namespace, destroy)
   check_prerequisites(namespace)
 
   # How to fetch the kubeconfig file, so we can talk to the cluster
@@ -31,7 +31,8 @@ def main(namespace)
 
   # KUBE_CONFIG & KUBE_CTX env. vars must be in scope, or tf_plan will not work
   # see: https://www.terraform.io/docs/providers/kubernetes/index.html#argument-reference
-  tf_plan(tf_executable)
+
+  destroy ? tf_apply(tf_executable) : tf_plan(tf_executable)
 end
 
 def check_prerequisites(namespace)
@@ -83,8 +84,22 @@ def tf_plan(tf_executable)
   system cmd
 end
 
+# Apply the terraform plan, with no confirmation step.
+# This will actually delete AWS resources, so use with care.
+def tf_apply(tf_executable)
+  cmd = <<~EOF
+    AWS_ACCESS_KEY_ID=${TFSTATE_AWS_ACCESS_KEY_ID} \
+    AWS_SECRET_ACCESS_KEY=${TFSTATE_AWS_SECRET_ACCESS_KEY} \
+    #{tf_executable} apply --auto-approve
+  EOF
+  system cmd
+end
+
 def env(var)
   ENV.fetch(var)
 end
 
-main ARGV.shift
+namespace = ARGV.shift
+destroy = (ARGV.shift == 'destroy')
+
+main(namespace, destroy)
