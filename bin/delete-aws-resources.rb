@@ -14,9 +14,11 @@ def main(namespace)
   puts "About to delete AWS resources for namespace: #{namespace}"
   puts
 
+  tf_executable = "#{ENV.fetch('TERRAFORM_PATH')}/terraform"
+
   system("rm -rf .terraform main.tf") # clean up any leftover artefacts from prior invocations
   add_main_tf
-  tf_init namespace
+  tf_init(tf_executable, namespace)
   system('terraform plan')
 end
 
@@ -43,9 +45,11 @@ def add_main_tf
   File.open('main.tf', 'w') {|f| f.puts content}
 end
 
-def tf_init(namespace)
+def tf_init(tf_executable, namespace)
+  # Get AWS credentials from the environment, via bash, so that we don't
+  # accidentally log them in cleartext, if all commands are logged.
   cmd = <<~EOF
-  terraform init \
+  #{tf_executable} init \
     -backend-config="access_key=${TFSTATE_AWS_ACCESS_KEY_ID}" \
     -backend-config="secret_key=${TFSTATE_AWS_SECRET_ACCESS_KEY}" \
     -backend-config="bucket=#{ENV.fetch('PIPELINE_STATE_BUCKET')}" \
