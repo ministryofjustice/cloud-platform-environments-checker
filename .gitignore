@@ -1,8 +1,7 @@
 .bundle
 .env
+.env.*
 .dockerignore
-.env.live0
-.env.live1
 .terraform
 main.tf
 output/check.txt
