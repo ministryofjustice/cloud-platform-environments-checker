@@ -2,7 +2,7 @@ class GithubNamespaceLister
   attr_reader :env_repo, :cluster_name
 
   def initialize(args)
-    @env_repo = args.fetch(:env_repo)
+    @env_repo     = args.fetch(:env_repo)
     @cluster_name = args.fetch(:cluster_name)
   end
 
