@@ -4,9 +4,9 @@ RSpec.describe CloudPlatformOrphanNamespaces do
 
   let(:params) { {
     cluster_name:    'foo',
-    kubeconfig:      double(Object, fetch:            true),
-    tfstate_lister:  double(Object, namespaces:       tfstate_namespaces),
-    cluster_lister:  double(Object, namespace_names:  cluster_namespaces),
+    kubeconfig:      double(fetch:            true),
+    tfstate_lister:  double(namespaces:       tfstate_namespaces),
+    cluster_lister:  double(namespace_names:  cluster_namespaces),
     github_lister:   github_lister,
   } }
 
@@ -60,7 +60,7 @@ RSpec.describe CloudPlatformOrphanNamespaces do
       { type: 's3-bucket',    id: 1 },
       { type: 'rds-instance', id: 2 },
     ] }
-    let(:namespace) { double(Object, name: 'has-no-source-code', aws_resources: aws_resources) }
+    let(:namespace) { double(name: 'has-no-source-code', aws_resources: aws_resources) }
     let(:tfstate_namespaces) { [ namespace ] }
 
     it "lists the AWS resources" do
