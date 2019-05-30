@@ -14,7 +14,7 @@ def main
     bucket:                env('KUBECONFIG_S3_BUCKET'),
     key:                   env('KUBECONFIG_S3_KEY'),
     local_target:          env('KUBECONFIG'),
-    context:               env('KUBECONTEXT'),
+    context:               env('KUBE_CTX'),
   }
 
   # How to retrieve the terraform state, so we can query it to look
@@ -51,7 +51,7 @@ def check_prerequisites
     KUBECONFIG_S3_BUCKET
     KUBECONFIG_S3_KEY
     KUBECONFIG
-    KUBECONTEXT
+    KUBE_CTX
     TFSTATE_AWS_REGION
     TFSTATE_AWS_ACCESS_KEY_ID
     TFSTATE_AWS_SECRET_ACCESS_KEY
