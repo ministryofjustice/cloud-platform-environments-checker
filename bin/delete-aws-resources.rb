@@ -14,7 +14,7 @@ def main(namespace)
   puts "About to delete AWS resources for namespace: #{namespace}"
   puts
 
-  tf_executable = "#{ENV.fetch('TERRAFORM_PATH')}/terraform"
+  tf_executable = "#{env('TERRAFORM_PATH')}/terraform"
 
   system("rm -rf .terraform main.tf") # clean up any leftover artefacts from prior invocations
   add_main_tf
@@ -33,7 +33,7 @@ def check_prerequisites(namespace)
     PIPELINE_STATE_BUCKET
     PIPELINE_CLUSTER
   ).each do |var|
-    ENV.fetch(var)
+    env(var)
   end
 
   raise "Namespace #{namespace} exists in the environments github repo\nAborting." if namespace_defined_in_code?(namespace)
@@ -42,7 +42,7 @@ end
 def namespace_defined_in_code?(namespace)
   GithubNamespaceLister.new(
     env_repo: ENVIRONMENTS_GITHUB_REPO,
-    cluster_name: ENV.fetch('PIPELINE_CLUSTER')
+    cluster_name: env('PIPELINE_CLUSTER')
   ).namespace_exists?(namespace)
 end
 
@@ -59,9 +59,9 @@ def tf_init(tf_executable, namespace)
   #{tf_executable} init \
     -backend-config="access_key=${TFSTATE_AWS_ACCESS_KEY_ID}" \
     -backend-config="secret_key=${TFSTATE_AWS_SECRET_ACCESS_KEY}" \
-    -backend-config="bucket=#{ENV.fetch('PIPELINE_STATE_BUCKET')}" \
-    -backend-config="key=#{ENV.fetch('PIPELINE_CLUSTER')}/#{namespace}/terraform.tfstate" \
-    -backend-config="region=#{ENV.fetch('TFSTATE_AWS_REGION')}"
+    -backend-config="bucket=#{env('PIPELINE_STATE_BUCKET')}" \
+    -backend-config="key=#{env('PIPELINE_CLUSTER')}/#{namespace}/terraform.tfstate" \
+    -backend-config="region=#{env('TFSTATE_AWS_REGION')}"
   EOF
   system cmd
 end
@@ -75,6 +75,10 @@ def tf_plan(tf_executable)
     #{tf_executable} plan
   EOF
   system cmd
+end
+
+def env(var)
+  ENV.fetch(var)
 end
 
 main ARGV.shift
