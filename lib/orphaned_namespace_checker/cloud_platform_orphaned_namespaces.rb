@@ -17,25 +17,15 @@ class CloudPlatformOrphanNamespaces
       aws_secret_access_key: env('KUBECONFIG_AWS_SECRET_ACCESS_KEY'),
     ).fetch_and_store(local_kubeconfig)
 
-    @github_lister = args.fetch(:github_lister, GithubNamespaceLister.new(
-                                                  env_repo: ENVIRONMENTS_REPO,
-                                                  cluster_name: cluster_name
-                                                )
-    )
-
-    @tfstate_lister = args.fetch(:tfstate_lister, TFStateNamespaceLister.new(
-                                                    bucket: env('PIPELINE_STATE_BUCKET'),
-                                                    bucket_prefix: env('BUCKET_PREFIX')
-                                                  )
-    )
-
+    @github_lister  = args.fetch(:github_lister,  GithubNamespaceLister.new(env_repo: ENVIRONMENTS_REPO, cluster_name: cluster_name))
+    @tfstate_lister = args.fetch(:tfstate_lister, TFStateNamespaceLister.new(bucket: env('PIPELINE_STATE_BUCKET'), bucket_prefix: env('BUCKET_PREFIX')))
     @cluster_lister = args.fetch(:cluster_lister, ClusterNamespaceLister.new(kubeconfig: local_kubeconfig))
   end
 
   def report
     rtn = []
     namespaces_with_tfstate = tfstate_lister.namespaces
-    orphan_namespace_names = namespace_names_with_no_source_code
+    orphan_namespace_names  = namespace_names_with_no_source_code
 
     if orphan_namespace_names.any?
       rtn << "Namespaces in cluster #{cluster_name} with no source code in the #{ENVIRONMENTS_REPO} repository:\n"
