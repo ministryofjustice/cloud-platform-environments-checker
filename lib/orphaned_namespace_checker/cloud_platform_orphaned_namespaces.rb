@@ -1,20 +1,19 @@
 class CloudPlatformOrphanNamespaces
-  attr_reader :cluster_name, :github_lister, :tfstate_lister, :cluster_lister
+  attr_reader :cluster_name, :github_lister, :tfstate_lister, :cluster_lister, :kubeconfig
 
   ENVIRONMENTS_REPO = 'cloud-platform-environments'
 
   def initialize(args = {})
-    @cluster_name  = env('PIPELINE_CLUSTER')
-    kubeconfig     = args.fetch(:kubeconfig)
-
-    Kubeconfig.new(kubeconfig).fetch_and_store
-
+    @cluster_name   = env('PIPELINE_CLUSTER')
+    @kubeconfig     = args.fetch(:kubeconfig)
     @tfstate_lister = args.fetch(:tfstate_lister, TFStateNamespaceLister.new(args.fetch(:tfstate)))
     @github_lister  = args.fetch(:github_lister,  GithubNamespaceLister.new(env_repo: ENVIRONMENTS_REPO, cluster_name: cluster_name))
     @cluster_lister = args.fetch(:cluster_lister, ClusterNamespaceLister.new(kubeconfig: kubeconfig.fetch(:local_target)))
   end
 
   def report
+    Kubeconfig.new(kubeconfig).fetch_and_store
+
     rtn = []
     namespaces_with_tfstate = tfstate_lister.namespaces
     orphan_namespace_names  = namespace_names_with_no_source_code
