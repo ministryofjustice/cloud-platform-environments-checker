@@ -16,7 +16,7 @@ def main(namespace)
   check_prerequisites(namespace)
 
   puts
-  puts "About to delete AWS resources for namespace: ${namespace}"
+  puts "About to delete AWS resources for namespace: #{namespace}"
   puts
 
   system("rm -rf .terraform main.tf") # clean up any leftover artefacts from prior invocations
