@@ -8,7 +8,6 @@ class CloudPlatformOrphanNamespaces
 
     local_kubeconfig = env('KUBECONFIG')
 
-    # The kubernetes config file is stored in S3 under the AWS Cloud Platform account
     Kubeconfig.new(
       region:                env('KUBECONFIG_AWS_REGION'),
       bucket:                env('KUBECONFIG_S3_BUCKET'),
