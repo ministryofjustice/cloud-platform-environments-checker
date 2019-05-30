@@ -18,6 +18,7 @@ This script expects the same environment variables as the `orphaned_namespaces` 
 
 Currently, this script is not being executed by the concourse pipeline, so must be run manually, if desired.
 
+See the `makefile` for an example of how to run this script.
 
 [env-repo]: https://github.com/ministryofjustice/cloud-platform-environments
 [concourse-job]: https://github.com/ministryofjustice/cloud-platform-concourse/blob/master/pipelines/live-1/main/check-environment.yaml
