@@ -4,6 +4,21 @@ Ruby code to compare the namespaces which exist in the cluster to those which ar
 
 Namespaces which exist in the cluster, but which are not defined in the repo should be deleted, along with all of their AWS resources.
 
+## S3 bucket locations
+
+These scripts need to fetch some resources from S3:
+
+ * A valid Kubernetes config file, for the targeted cluster
+ * The terraform state files for cluster namespaces
+
+These are stored in different AWS accounts and regions, depending on the cluster. Hence, multiple sets of AWS credentials must be supplied (as environment variables).
+
+## Environment variables
+
+These scripts require many environment variables to be set. See `example.env.live-0` and `example.env.live-1` for a list.
+
+You can copy these examples to, e.g. `.env.live1` and `.env.live0` (which will be `git ignore`d) and supply valid AWS credentials, in order to run these scripts locally (either directly, or via the docker image).
+
 ## bin/orphaned_namespaces.rb
 
 This script outputs a report, detailing the namespaces which are not defined in the [env-repo], and any associated AWS resources which are defined in the terraform state.
