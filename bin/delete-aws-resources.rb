@@ -73,9 +73,6 @@ def tf_init(tf_executable, namespace)
 end
 
 def tf_plan(tf_executable)
-  # Get AWS credentials from the environment, via bash, so that we don't
-  # accidentally log them in cleartext, if all commands are logged.
-  #
   # Terraform plan will only use AWS credentials from these, specific
   # variable names.
   cmd = <<~EOF
