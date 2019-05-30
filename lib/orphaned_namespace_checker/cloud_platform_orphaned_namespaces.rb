@@ -1,18 +1,11 @@
 class CloudPlatformOrphanNamespaces
-  attr_reader :bucket_prefix, :tfstate_s3, :cluster_name
+  attr_reader :bucket_prefix, :cluster_name
 
   def initialize(args = {})
     @cluster_name  = env('PIPELINE_CLUSTER')
     @bucket_prefix = env('BUCKET_PREFIX')
     @env_repo      = 'cloud-platform-environments'
     @state_bucket  = env('PIPELINE_STATE_BUCKET')
-
-    # The terraform state for live-0 is stored in S3 under the AWS Platform Integration account
-    # The terraform state for live-1 is stored in S3 under the AWS Cloud Platform account
-    @tfstate_s3 = Aws::S3::Client.new(
-      region: env('TFSTATE_AWS_REGION'),
-      credentials: Aws::Credentials.new(env('TFSTATE_AWS_ACCESS_KEY_ID'), env('TFSTATE_AWS_SECRET_ACCESS_KEY'))
-    )
 
     local_kubeconfig = env('KUBECONFIG')
 
