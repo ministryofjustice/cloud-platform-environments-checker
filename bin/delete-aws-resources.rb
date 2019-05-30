@@ -15,7 +15,7 @@ def main(namespace)
     ),
     bucket:                env('KUBECONFIG_S3_BUCKET'),
     key:                   env('KUBECONFIG_S3_KEY'),
-    local_target:          env('KUBECONFIG'),
+    local_target:          env('KUBE_CONFIG'),
     context:               env('KUBE_CTX'),
   }
   Kubeconfig.new(kubeconfig).fetch_and_store
@@ -29,7 +29,7 @@ def main(namespace)
   system("rm -rf .terraform") # clean up any leftover state from prior invocations
   tf_init(tf_executable, namespace)
 
-  # KUBECONFIG & KUBE_CTX env. vars must be in scope, or tf_plan will not work
+  # KUBE_CONFIG & KUBE_CTX env. vars must be in scope, or tf_plan will not work
   # see: https://www.terraform.io/docs/providers/kubernetes/index.html#argument-reference
   tf_plan(tf_executable)
 end

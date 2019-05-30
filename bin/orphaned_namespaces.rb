@@ -13,7 +13,7 @@ def main
     ),
     bucket:                env('KUBECONFIG_S3_BUCKET'),
     key:                   env('KUBECONFIG_S3_KEY'),
-    local_target:          env('KUBECONFIG'),
+    local_target:          env('KUBE_CONFIG'),
     context:               env('KUBE_CTX'),
   }
 
@@ -50,7 +50,7 @@ def check_prerequisites
     KUBECONFIG_AWS_SECRET_ACCESS_KEY
     KUBECONFIG_S3_BUCKET
     KUBECONFIG_S3_KEY
-    KUBECONFIG
+    KUBE_CONFIG
     KUBE_CTX
     TFSTATE_AWS_REGION
     TFSTATE_AWS_ACCESS_KEY_ID
