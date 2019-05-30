@@ -26,4 +26,28 @@ RSpec.describe CloudPlatformOrphanNamespaces do
       }.to raise_error(RuntimeError, "No github repositories returned. Aborting")
     end
   end
+
+  context "when every namespace has source code" do
+    let(:github_namespaces) { ['is-in-github'] }
+    let(:cluster_namespaces) { ['is-in-github'] }
+
+    it "produces no output" do
+      expect(checker.report).to eq('')
+    end
+  end
+
+  context "when a namespace has no source code" do
+    let(:github_namespaces)  { ['is-in-github'] }
+    let(:cluster_namespaces) { ['is-in-github', 'has-no-source-code'] }
+
+    it "includes namespace in the report" do
+      expected = <<~EOF
+      Namespaces in cluster foo with no source code in the cloud-platform-environments repository:
+
+      has-no-source-code
+
+      EOF
+      expect(checker.report).to eq(expected)
+    end
+  end
 end
