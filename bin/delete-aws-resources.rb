@@ -44,7 +44,7 @@ end
 
 def add_main_tf
   content = open(CANONICAL_MAIN_TF_URL).read
-  raise "Couldn't retrieve main.tf from #{CANONICAL_MAIN_TF_URL}" if content.empty?
+  raise "Couldn't retrieve main.tf from #{CANONICAL_MAIN_TF_URL}" if content.to_s.empty?
   File.open('main.tf', 'w') {|f| f.puts content}
 end
 
