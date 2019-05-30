@@ -1,9 +1,11 @@
 RSpec.describe CloudPlatformOrphanNamespaces do
+  let(:cluster_namespaces) { [] }
+
   let(:params) { {
     cluster_name:    'foo',
     kubeconfig:      double(Object, fetch:            true),
     tfstate_lister:  double(Object, namespaces:       []),
-    cluster_lister:  double(Object, namespace_names:  []),
+    cluster_lister:  double(Object, namespace_names:  cluster_namespaces),
     github_lister:   github_lister,
   } }
 
