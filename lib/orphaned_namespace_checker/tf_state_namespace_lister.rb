@@ -8,13 +8,7 @@ class TFStateNamespaceLister
   def initialize(args)
     @bucket        = args.fetch(:bucket)
     @bucket_prefix = args.fetch(:bucket_prefix)
-    @s3client      = args.fetch(:s3client, Aws::S3::Client.new(
-      region: ENV.fetch('TFSTATE_AWS_REGION'),
-      credentials: Aws::Credentials.new(
-        ENV.fetch('TFSTATE_AWS_ACCESS_KEY_ID'),
-        ENV.fetch('TFSTATE_AWS_SECRET_ACCESS_KEY')
-      )
-    ))
+    @s3client      = args.fetch(:s3client)
   end
 
   # If a namespace is defined in the terraform state for the cluster
