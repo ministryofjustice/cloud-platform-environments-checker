@@ -1,5 +1,5 @@
 class CloudPlatformOrphanNamespaces
-  attr_reader :bucket_prefix, :tfstate_s3, :kubeconfig_s3, :cluster_name
+  attr_reader :bucket_prefix, :tfstate_s3, :cluster_name
 
   def initialize(args = {})
     @cluster_name = env('PIPELINE_CLUSTER')
@@ -8,24 +8,19 @@ class CloudPlatformOrphanNamespaces
     # The terraform state for live-1 is stored in S3 under the AWS Cloud Platform account
     @tfstate_s3 = Aws::S3::Client.new(
       region: env('TFSTATE_AWS_REGION'),
-      credentials: Aws::Credentials.new(
-        env('TFSTATE_AWS_ACCESS_KEY_ID'),
-        env('TFSTATE_AWS_SECRET_ACCESS_KEY')
-      )
+      credentials: Aws::Credentials.new(env('TFSTATE_AWS_ACCESS_KEY_ID'), env('TFSTATE_AWS_SECRET_ACCESS_KEY'))
     )
+
+    local_kubeconfig = env('KUBECONFIG')
 
     # The kubernetes config file is stored in S3 under the AWS Cloud Platform account
-    @kubeconfig_s3 = Aws::S3::Client.new(
-      region: env('KUBECONFIG_AWS_REGION'),
-      credentials: Aws::Credentials.new(
-        env('KUBECONFIG_AWS_ACCESS_KEY_ID'),
-        env('KUBECONFIG_AWS_SECRET_ACCESS_KEY')
-      )
-    )
-
-    config_s3_location = {bucket: env('KUBECONFIG_S3_BUCKET'), key: env('KUBECONFIG_S3_KEY') }
-    local_kubeconfig = env('KUBECONFIG')
-    fetch_and_store_kubeconfig(config_s3_location, local_kubeconfig)
+    Kubeconfig.new(
+      region:                env('KUBECONFIG_AWS_REGION'),
+      bucket:                env('KUBECONFIG_S3_BUCKET'),
+      key:                   env('KUBECONFIG_S3_KEY'),
+      aws_access_key_id:     env('KUBECONFIG_AWS_ACCESS_KEY_ID'),
+      aws_secret_access_key: env('KUBECONFIG_AWS_SECRET_ACCESS_KEY'),
+    ).fetch_and_store(local_kubeconfig)
 
     @github_lister = args.fetch(
       :github_lister,
@@ -88,15 +83,6 @@ class CloudPlatformOrphanNamespaces
     names = @github_lister.namespace_names
     raise "No github repositories returned. Aborting" if names.empty?
     names
-  end
-
-  # Get the kube config file from S3 and put it somewhere
-  # we can read from
-  def fetch_and_store_kubeconfig(s3_location, target_location)
-    config = kubeconfig_s3.get_object(s3_location)
-    File.open(target_location, 'w') do |f|
-      f.puts config.body.read
-    end
   end
 
   def env(var)
