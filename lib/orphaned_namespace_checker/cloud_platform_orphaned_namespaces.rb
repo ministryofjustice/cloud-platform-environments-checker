@@ -9,17 +9,7 @@ class CloudPlatformOrphanNamespaces
 
     Kubeconfig.new(kubeconfig).fetch_and_store
 
-    @tfstate_lister = args.fetch(:tfstate_lister) do
-        TFStateNamespaceLister.new(
-          s3client: Aws::S3::Client.new(
-            region: env('TFSTATE_AWS_REGION'),
-            credentials: Aws::Credentials.new(env('TFSTATE_AWS_ACCESS_KEY_ID'), env('TFSTATE_AWS_SECRET_ACCESS_KEY'))
-          ),
-          bucket: env('PIPELINE_STATE_BUCKET'),
-          bucket_prefix: env('BUCKET_PREFIX')
-        )
-    end
-
+    @tfstate_lister = args.fetch(:tfstate_lister, TFStateNamespaceLister.new(args.fetch(:tfstate)))
     @github_lister  = args.fetch(:github_lister,  GithubNamespaceLister.new(env_repo: ENVIRONMENTS_REPO, cluster_name: cluster_name))
     @cluster_lister = args.fetch(:cluster_lister, ClusterNamespaceLister.new(kubeconfig: kubeconfig.fetch(:local_target)))
   end
