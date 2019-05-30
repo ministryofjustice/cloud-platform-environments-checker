@@ -2,7 +2,10 @@ class CloudPlatformOrphanNamespaces
   attr_reader :bucket_prefix, :tfstate_s3, :cluster_name
 
   def initialize(args = {})
-    @cluster_name = env('PIPELINE_CLUSTER')
+    @cluster_name  = env('PIPELINE_CLUSTER')
+    @bucket_prefix = env('BUCKET_PREFIX')
+    @env_repo      = 'cloud-platform-environments'
+    @state_bucket  = env('PIPELINE_STATE_BUCKET')
 
     # The terraform state for live-0 is stored in S3 under the AWS Platform Integration account
     # The terraform state for live-1 is stored in S3 under the AWS Cloud Platform account
@@ -22,31 +25,19 @@ class CloudPlatformOrphanNamespaces
       aws_secret_access_key: env('KUBECONFIG_AWS_SECRET_ACCESS_KEY'),
     ).fetch_and_store(local_kubeconfig)
 
-    @github_lister = args.fetch(
-      :github_lister,
-      GithubNamespaceLister.new(
-        env_repo: 'cloud-platform-environments',
-        cluster_name: cluster_name
-      )
+    @github_lister = args.fetch(:github_lister, GithubNamespaceLister.new(
+                                                  env_repo: 'cloud-platform-environments',
+                                                  cluster_name: cluster_name
+                                                )
     )
 
-    @tfstate_lister = args.fetch(
-      :tfstate_lister,
-      TFStateNamespaceLister.new(
-        bucket: env('PIPELINE_STATE_BUCKET'),
-        bucket_prefix: env('BUCKET_PREFIX')
-      )
+    @tfstate_lister = args.fetch(:tfstate_lister, TFStateNamespaceLister.new(
+                                                    bucket: env('PIPELINE_STATE_BUCKET'),
+                                                    bucket_prefix: env('BUCKET_PREFIX')
+                                                  )
     )
 
-    @cluster_lister = args.fetch(
-      :cluster_lister,
-      ClusterNamespaceLister.new(kubeconfig: local_kubeconfig)
-    )
-
-    @bucket_prefix = env('BUCKET_PREFIX')
-
-    @env_repo     = 'cloud-platform-environments'
-    @state_bucket = env('PIPELINE_STATE_BUCKET')
+    @cluster_lister = args.fetch(:cluster_lister, ClusterNamespaceLister.new(kubeconfig: local_kubeconfig))
   end
 
   def report
