@@ -26,11 +26,12 @@ def main(namespace)
 end
 
 def check_prerequisites(namespace)
-  raise "Namespace #{namespace} exists in the environments github repo\nAborting." if namespace_defined_in_code?(namespace)
 
   # Ensure we have AWS credentials
   ENV.fetch('TFSTATE_AWS_ACCESS_KEY_ID')
   ENV.fetch('TFSTATE_AWS_SECRET_ACCESS_KEY')
+
+  raise "Namespace #{namespace} exists in the environments github repo\nAborting." if namespace_defined_in_code?(namespace)
 end
 
 def namespace_defined_in_code?(namespace)
