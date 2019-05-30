@@ -1,5 +1,5 @@
 class CloudPlatformOrphanNamespaces
-  attr_reader :cluster_name
+  attr_reader :cluster_name, :github_lister, :tfstate_lister, :cluster_lister
 
   ENVIRONMENTS_REPO = 'cloud-platform-environments'
 
@@ -36,7 +36,7 @@ class CloudPlatformOrphanNamespaces
 
   def report
     rtn = []
-    namespaces_with_tfstate = @tfstate_lister.namespaces
+    namespaces_with_tfstate = tfstate_lister.namespaces
     orphan_namespace_names = namespace_names_with_no_source_code
 
     if orphan_namespace_names.any?
@@ -61,11 +61,11 @@ class CloudPlatformOrphanNamespaces
   private
 
   def namespace_names_with_no_source_code
-    @cluster_lister.namespace_names - namespace_names_defined_in_git_repository
+    cluster_lister.namespace_names - namespace_names_defined_in_git_repository
   end
 
   def namespace_names_defined_in_git_repository
-    names = @github_lister.namespace_names
+    names = github_lister.namespace_names
     raise "No github repositories returned. Aborting" if names.empty?
     names
   end
