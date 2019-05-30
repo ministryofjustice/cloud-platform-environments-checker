@@ -2,29 +2,29 @@ class CloudPlatformOrphanNamespaces
   attr_reader :bucket_prefix, :tfstate_s3, :kubeconfig_s3, :cluster_name
 
   def initialize(args = {})
-    @cluster_name = ENV.fetch('PIPELINE_CLUSTER')
+    @cluster_name = env('PIPELINE_CLUSTER')
 
     # The terraform state for live-0 is stored in S3 under the AWS Platform Integration account
     # The terraform state for live-1 is stored in S3 under the AWS Cloud Platform account
     @tfstate_s3 = Aws::S3::Client.new(
-      region: ENV.fetch('TFSTATE_AWS_REGION'),
+      region: env('TFSTATE_AWS_REGION'),
       credentials: Aws::Credentials.new(
-        ENV.fetch('TFSTATE_AWS_ACCESS_KEY_ID'),
-        ENV.fetch('TFSTATE_AWS_SECRET_ACCESS_KEY')
+        env('TFSTATE_AWS_ACCESS_KEY_ID'),
+        env('TFSTATE_AWS_SECRET_ACCESS_KEY')
       )
     )
 
     # The kubernetes config file is stored in S3 under the AWS Cloud Platform account
     @kubeconfig_s3 = Aws::S3::Client.new(
-      region: ENV.fetch('KUBECONFIG_AWS_REGION'),
+      region: env('KUBECONFIG_AWS_REGION'),
       credentials: Aws::Credentials.new(
-        ENV.fetch('KUBECONFIG_AWS_ACCESS_KEY_ID'),
-        ENV.fetch('KUBECONFIG_AWS_SECRET_ACCESS_KEY')
+        env('KUBECONFIG_AWS_ACCESS_KEY_ID'),
+        env('KUBECONFIG_AWS_SECRET_ACCESS_KEY')
       )
     )
 
-    config_s3_location = {bucket: ENV.fetch('KUBECONFIG_S3_BUCKET'), key: ENV.fetch('KUBECONFIG_S3_KEY') }
-    local_kubeconfig = ENV.fetch('KUBECONFIG')
+    config_s3_location = {bucket: env('KUBECONFIG_S3_BUCKET'), key: env('KUBECONFIG_S3_KEY') }
+    local_kubeconfig = env('KUBECONFIG')
     fetch_and_store_kubeconfig(config_s3_location, local_kubeconfig)
 
     @github_lister = args.fetch(
@@ -38,8 +38,8 @@ class CloudPlatformOrphanNamespaces
     @tfstate_lister = args.fetch(
       :tfstate_lister,
       TFStateNamespaceLister.new(
-        bucket: ENV.fetch('PIPELINE_STATE_BUCKET'),
-        bucket_prefix: ENV.fetch('BUCKET_PREFIX')
+        bucket: env('PIPELINE_STATE_BUCKET'),
+        bucket_prefix: env('BUCKET_PREFIX')
       )
     )
 
@@ -48,10 +48,10 @@ class CloudPlatformOrphanNamespaces
       ClusterNamespaceLister.new(kubeconfig: local_kubeconfig)
     )
 
-    @bucket_prefix = ENV.fetch('BUCKET_PREFIX')
+    @bucket_prefix = env('BUCKET_PREFIX')
 
     @env_repo     = 'cloud-platform-environments'
-    @state_bucket = ENV.fetch('PIPELINE_STATE_BUCKET')
+    @state_bucket = env('PIPELINE_STATE_BUCKET')
   end
 
   def report
@@ -99,4 +99,7 @@ class CloudPlatformOrphanNamespaces
     end
   end
 
+  def env(var)
+    ENV.fetch(var)
+  end
 end
