@@ -85,6 +85,9 @@ end
 def tf_plan(tf_executable)
   # Get AWS credentials from the environment, via bash, so that we don't
   # accidentally log them in cleartext, if all commands are logged.
+  #
+  # Terraform plan will only use AWS credentials from these, specific
+  # variable names.
   cmd = <<~EOF
     AWS_ACCESS_KEY_ID=${TFSTATE_AWS_ACCESS_KEY_ID} \
     AWS_SECRET_ACCESS_KEY=${TFSTATE_AWS_SECRET_ACCESS_KEY} \
