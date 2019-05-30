@@ -2,9 +2,6 @@
 
 require "#{File.dirname(__FILE__)}/../lib/orphaned_namespace_checker"
 
-# This is the 'empty' main.tf file that we add, by default, to any namespaces users create
-CANONICAL_MAIN_TF_URL = 'https://raw.githubusercontent.com/ministryofjustice/cloud-platform-environments/master/namespace-resources/resources-main-tf'
-
 ENVIRONMENTS_GITHUB_REPO = 'cloud-platform-environments'
 
 def main(namespace)
@@ -29,8 +26,7 @@ def main(namespace)
 
   tf_executable = "#{env('TERRAFORM_PATH')}/terraform"
 
-  system("rm -rf .terraform main.tf") # clean up any leftover artefacts from prior invocations
-  add_main_tf
+  system("rm -rf .terraform") # clean up any leftover state from prior invocations
   tf_init(tf_executable, namespace)
 
   # KUBECONFIG & KUBE_CTX env. vars must be in scope, or tf_plan will not work
@@ -60,12 +56,6 @@ def namespace_defined_in_code?(namespace)
     env_repo: ENVIRONMENTS_GITHUB_REPO,
     cluster_name: env('PIPELINE_CLUSTER')
   ).namespace_exists?(namespace)
-end
-
-def add_main_tf
-  content = open(CANONICAL_MAIN_TF_URL).read
-  raise "Couldn't retrieve main.tf from #{CANONICAL_MAIN_TF_URL}" if content.to_s.empty?
-  File.open('main.tf', 'w') {|f| f.puts content}
 end
 
 def tf_init(tf_executable, namespace)
