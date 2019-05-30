@@ -7,11 +7,6 @@ CANONICAL_MAIN_TF_URL = 'https://raw.githubusercontent.com/ministryofjustice/clo
 
 ENVIRONMENTS_GITHUB_REPO = 'cloud-platform-environments'
 
-# TODO: get from env. vars.
-PIPELINE_STATE_BUCKET = 'moj-cp-k8s-investigation-environments-terraform'
-PIPELINE_STATE_REGION = 'eu-west-1'
-PIPELINE_CLUSTER = 'cloud-platform-live-0.k8s.integration.dsd.io'
-
 def main(namespace)
   check_prerequisites(namespace)
 
@@ -53,9 +48,9 @@ def tf_init(namespace)
   terraform init \
     -backend-config="access_key=${TFSTATE_AWS_ACCESS_KEY_ID}" \
     -backend-config="secret_key=${TFSTATE_AWS_SECRET_ACCESS_KEY}" \
-    -backend-config="bucket=#{PIPELINE_STATE_BUCKET}" \
-    -backend-config="key=#{PIPELINE_CLUSTER}/#{namespace}/terraform.tfstate" \
-    -backend-config="region=#{PIPELINE_STATE_REGION}"
+    -backend-config="bucket=#{ENV.fetch('PIPELINE_STATE_BUCKET')}" \
+    -backend-config="key=#{ENV.fetch('PIPELINE_CLUSTER')}/#{namespace}/terraform.tfstate" \
+    -backend-config="region=#{ENV.fetch('TFSTATE_AWS_REGION')}"
   EOF
   system cmd
 end
