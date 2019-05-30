@@ -5,16 +5,9 @@ class CloudPlatformOrphanNamespaces
 
   def initialize(args = {})
     @cluster_name  = env('PIPELINE_CLUSTER')
+    kubeconfig     = args.fetch(:kubeconfig)
 
-    local_kubeconfig = env('KUBECONFIG')
-
-    Kubeconfig.new(
-      region:                env('KUBECONFIG_AWS_REGION'),
-      bucket:                env('KUBECONFIG_S3_BUCKET'),
-      key:                   env('KUBECONFIG_S3_KEY'),
-      aws_access_key_id:     env('KUBECONFIG_AWS_ACCESS_KEY_ID'),
-      aws_secret_access_key: env('KUBECONFIG_AWS_SECRET_ACCESS_KEY'),
-    ).fetch_and_store(local_kubeconfig)
+    Kubeconfig.new(kubeconfig).fetch_and_store
 
     @tfstate_lister = args.fetch(:tfstate_lister) do
         TFStateNamespaceLister.new(
@@ -28,7 +21,7 @@ class CloudPlatformOrphanNamespaces
     end
 
     @github_lister  = args.fetch(:github_lister,  GithubNamespaceLister.new(env_repo: ENVIRONMENTS_REPO, cluster_name: cluster_name))
-    @cluster_lister = args.fetch(:cluster_lister, ClusterNamespaceLister.new(kubeconfig: local_kubeconfig))
+    @cluster_lister = args.fetch(:cluster_lister, ClusterNamespaceLister.new(kubeconfig: kubeconfig.fetch(:local_target)))
   end
 
   def report
