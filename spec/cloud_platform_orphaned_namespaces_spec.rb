@@ -1,10 +1,11 @@
 RSpec.describe CloudPlatformOrphanNamespaces do
   let(:cluster_namespaces) { [] }
+  let(:tfstate_namespaces) { [] }
 
   let(:params) { {
     cluster_name:    'foo',
     kubeconfig:      double(Object, fetch:            true),
-    tfstate_lister:  double(Object, namespaces:       []),
+    tfstate_lister:  double(Object, namespaces:       tfstate_namespaces),
     cluster_lister:  double(Object, namespace_names:  cluster_namespaces),
     github_lister:   github_lister,
   } }
@@ -45,6 +46,31 @@ RSpec.describe CloudPlatformOrphanNamespaces do
       Namespaces in cluster foo with no source code in the cloud-platform-environments repository:
 
       has-no-source-code
+
+      EOF
+      expect(checker.report).to eq(expected)
+    end
+  end
+
+  context "when orphan namespace has AWS resources" do
+    let(:github_namespaces)  { ['is-in-github'] }
+    let(:cluster_namespaces) { ['is-in-github', 'has-no-source-code'] }
+
+    let(:aws_resources) { [
+      { type: 's3-bucket',    id: 1 },
+      { type: 'rds-instance', id: 2 },
+    ] }
+    let(:namespace) { double(Object, name: 'has-no-source-code', aws_resources: aws_resources) }
+    let(:tfstate_namespaces) { [ namespace ] }
+
+    it "lists the AWS resources" do
+      expected = <<~EOF
+      Namespaces in cluster foo with no source code in the cloud-platform-environments repository:
+
+      has-no-source-code
+        AWS Resources:
+          s3-bucket: 1
+          rds-instance: 2
 
       EOF
       expect(checker.report).to eq(expected)
