@@ -19,7 +19,7 @@ def main(namespace)
   system("rm -rf .terraform main.tf") # clean up any leftover artefacts from prior invocations
   add_main_tf
   tf_init(tf_executable, namespace)
-  system('terraform plan')
+  tf_plan(tf_executable)
 end
 
 def check_prerequisites(namespace)
@@ -62,6 +62,17 @@ def tf_init(tf_executable, namespace)
     -backend-config="bucket=#{ENV.fetch('PIPELINE_STATE_BUCKET')}" \
     -backend-config="key=#{ENV.fetch('PIPELINE_CLUSTER')}/#{namespace}/terraform.tfstate" \
     -backend-config="region=#{ENV.fetch('TFSTATE_AWS_REGION')}"
+  EOF
+  system cmd
+end
+
+def tf_plan(tf_executable)
+  # Get AWS credentials from the environment, via bash, so that we don't
+  # accidentally log them in cleartext, if all commands are logged.
+  cmd = <<~EOF
+    AWS_ACCESS_KEY_ID=${TFSTATE_AWS_ACCESS_KEY_ID} \
+    AWS_SECRET_ACCESS_KEY=${TFSTATE_AWS_SECRET_ACCESS_KEY} \
+    #{tf_executable} plan
   EOF
   system cmd
 end
