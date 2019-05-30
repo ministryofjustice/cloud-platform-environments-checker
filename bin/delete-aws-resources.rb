@@ -25,9 +25,16 @@ end
 def check_prerequisites(namespace)
   raise "Please supply namespace as the first command-line argument" if namespace.to_s.empty?
 
-  # Ensure we have AWS credentials
-  ENV.fetch('TFSTATE_AWS_ACCESS_KEY_ID')
-  ENV.fetch('TFSTATE_AWS_SECRET_ACCESS_KEY')
+  %w(
+    TFSTATE_AWS_ACCESS_KEY_ID
+    TFSTATE_AWS_SECRET_ACCESS_KEY
+    TFSTATE_AWS_REGION
+    TERRAFORM_PATH
+    PIPELINE_STATE_BUCKET
+    PIPELINE_CLUSTER
+  ).each do |var|
+    ENV.fetch(var)
+  end
 
   raise "Namespace #{namespace} exists in the environments github repo\nAborting." if namespace_defined_in_code?(namespace)
 end
