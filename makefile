@@ -8,7 +8,6 @@ push:
 	docker tag $(IMAGE) ministryofjustice/$(IMAGE):$(VERSION)
 	docker push ministryofjustice/$(IMAGE):$(VERSION)
 
-# This expects to find a kube config file in ./kubecfg/config
 list-orphaned-namespaces:
 	docker run \
 	 -e PIPELINE_CLUSTER=$${PIPELINE_CLUSTER} \
