@@ -8,12 +8,14 @@ end
 
 # How to fetch the kubeconfig file, so we can talk to the cluster
 kubeconfig = {
-  local_target:          env('KUBECONFIG'),
-  region:                env('KUBECONFIG_AWS_REGION'),
+  s3client: Aws::S3::Client.new(
+    region: env('KUBECONFIG_AWS_REGION'),
+    credentials: Aws::Credentials.new(env('KUBECONFIG_AWS_ACCESS_KEY_ID'), env('KUBECONFIG_AWS_SECRET_ACCESS_KEY'))
+  ),
   bucket:                env('KUBECONFIG_S3_BUCKET'),
   key:                   env('KUBECONFIG_S3_KEY'),
-  aws_access_key_id:     env('KUBECONFIG_AWS_ACCESS_KEY_ID'),
-  aws_secret_access_key: env('KUBECONFIG_AWS_SECRET_ACCESS_KEY'),
+  local_target:          env('KUBECONFIG'),
+  context:               env('KUBECONTEXT'),
 }
 
 # How to retrieve the terraform state, so we can query it to look
