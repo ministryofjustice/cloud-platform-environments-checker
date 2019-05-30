@@ -6,9 +6,9 @@ class CloudPlatformOrphanNamespaces
   def initialize(args = {})
     @cluster_name   = args.fetch(:cluster_name)
     @kubeconfig     = args.fetch(:kubeconfig)
-    @tfstate_lister = args.fetch(:tfstate_lister, TFStateNamespaceLister.new(args.fetch(:tfstate)))
-    @github_lister  = args.fetch(:github_lister,  GithubNamespaceLister.new(env_repo: ENVIRONMENTS_REPO, cluster_name: cluster_name))
-    @cluster_lister = args.fetch(:cluster_lister, ClusterNamespaceLister.new(config_file: kubeconfig.fetch(:local_target), context: kubeconfig.fetch(:context)))
+    @tfstate_lister = args.fetch(:tfstate_lister) { TFStateNamespaceLister.new(args.fetch(:tfstate)) }
+    @github_lister  = args.fetch(:github_lister)  { GithubNamespaceLister.new(env_repo: ENVIRONMENTS_REPO, cluster_name: cluster_name) }
+    @cluster_lister = args.fetch(:cluster_lister) { ClusterNamespaceLister.new(config_file: kubeconfig.fetch(:local_target), context: kubeconfig.fetch(:context)) }
   end
 
   def report
