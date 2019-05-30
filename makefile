@@ -55,3 +55,17 @@ delete-aws-resources:
 	 -e KUBECONFIG_AWS_ACCESS_KEY_ID=$${KUBECONFIG_AWS_ACCESS_KEY_ID} \
 	 -e KUBECONFIG_AWS_SECRET_ACCESS_KEY=$${KUBECONFIG_AWS_SECRET_ACCESS_KEY} \
 		orphaned-namespace-checker sh -c "mkdir output; /app/bin/delete-aws-resources.rb $${NAMESPACE}"
+
+##
+## Usage examples for local development:
+##
+namespaces:
+	rm -rf output /tmp/kubeconfig
+	mkdir output
+	. .env.live0; ./bin/orphaned_namespaces.rb
+	cat output/check.txt
+
+delete:
+	. .env.live0; \
+	export TERRAFORM_PATH=$$(dirname $$(which terraform)); \
+	./bin/delete-aws-resources.rb myapp-dev
