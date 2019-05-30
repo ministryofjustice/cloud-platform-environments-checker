@@ -23,15 +23,16 @@ kubeconfig = {
 tfstate = {
   s3client: Aws::S3::Client.new(
     region: env('TFSTATE_AWS_REGION'),
-    credentials: Aws::Credentials.new(env('TFSTATE_AWS_ACCESS_KEY_ID'), env('TFSTATE_AWS_SECRET_ACCESS_KEY'))
+    credentials: Aws::Credentials.new(env('TFSTATE_AWS_ACCESS_KEY_ID'), env('TFSTATE_AWS_SECRET_ACCESS_KEY')),
   ),
   bucket: env('PIPELINE_STATE_BUCKET'),
-  bucket_prefix: env('BUCKET_PREFIX')
+  bucket_prefix: env('BUCKET_PREFIX'),
 }
 
 result = CloudPlatformOrphanNamespaces.new(
+  cluster_name: env('PIPELINE_CLUSTER'),
   kubeconfig: kubeconfig,
-  tfstate:    tfstate
+  tfstate:    tfstate,
 ).report
 
 # Concourse will create the 'output' directory during the

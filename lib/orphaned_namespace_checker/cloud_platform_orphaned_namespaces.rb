@@ -4,7 +4,7 @@ class CloudPlatformOrphanNamespaces
   ENVIRONMENTS_REPO = 'cloud-platform-environments'
 
   def initialize(args = {})
-    @cluster_name   = env('PIPELINE_CLUSTER')
+    @cluster_name   = args.fetch(:cluster_name)
     @kubeconfig     = args.fetch(:kubeconfig)
     @tfstate_lister = args.fetch(:tfstate_lister, TFStateNamespaceLister.new(args.fetch(:tfstate)))
     @github_lister  = args.fetch(:github_lister,  GithubNamespaceLister.new(env_repo: ENVIRONMENTS_REPO, cluster_name: cluster_name))
@@ -47,9 +47,5 @@ class CloudPlatformOrphanNamespaces
     names = github_lister.namespace_names
     raise "No github repositories returned. Aborting" if names.empty?
     names
-  end
-
-  def env(var)
-    ENV.fetch(var)
   end
 end
