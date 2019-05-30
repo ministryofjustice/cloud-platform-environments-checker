@@ -10,6 +10,19 @@ ENVIRONMENTS_GITHUB_REPO = 'cloud-platform-environments'
 def main(namespace)
   check_prerequisites(namespace)
 
+  # How to fetch the kubeconfig file, so we can talk to the cluster
+  kubeconfig = {
+    s3client: Aws::S3::Client.new(
+      region: env('KUBECONFIG_AWS_REGION'),
+      credentials: Aws::Credentials.new(env('KUBECONFIG_AWS_ACCESS_KEY_ID'), env('KUBECONFIG_AWS_SECRET_ACCESS_KEY'))
+    ),
+    bucket:                env('KUBECONFIG_S3_BUCKET'),
+    key:                   env('KUBECONFIG_S3_KEY'),
+    local_target:          env('KUBECONFIG'),
+    context:               env('KUBE_CTX'),
+  }
+  Kubeconfig.new(kubeconfig).fetch_and_store
+
   puts
   puts "About to delete AWS resources for namespace: #{namespace}"
   puts
@@ -19,6 +32,9 @@ def main(namespace)
   system("rm -rf .terraform main.tf") # clean up any leftover artefacts from prior invocations
   add_main_tf
   tf_init(tf_executable, namespace)
+
+  # KUBECONFIG & KUBE_CTX env. vars must be in scope, or tf_plan will not work
+  # see: https://www.terraform.io/docs/providers/kubernetes/index.html#argument-reference
   tf_plan(tf_executable)
 end
 
