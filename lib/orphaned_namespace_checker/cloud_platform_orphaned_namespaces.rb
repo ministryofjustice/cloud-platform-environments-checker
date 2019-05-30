@@ -4,7 +4,6 @@ class CloudPlatformOrphanNamespaces
   ENVIRONMENTS_REPO = 'cloud-platform-environments'
 
   def initialize(args = {})
-    @env_repo      = ENVIRONMENTS_REPO,
     @cluster_name  = env('PIPELINE_CLUSTER')
     @state_bucket  = env('PIPELINE_STATE_BUCKET')
 
@@ -20,7 +19,7 @@ class CloudPlatformOrphanNamespaces
     ).fetch_and_store(local_kubeconfig)
 
     @github_lister = args.fetch(:github_lister, GithubNamespaceLister.new(
-                                                  env_repo: 'cloud-platform-environments',
+                                                  env_repo: ENVIRONMENTS_REPO,
                                                   cluster_name: cluster_name
                                                 )
     )
@@ -40,7 +39,7 @@ class CloudPlatformOrphanNamespaces
     orphan_namespace_names = namespace_names_with_no_source_code
 
     if orphan_namespace_names.any?
-      rtn << "Namespaces in cluster #{cluster_name} with no source code in the #{@env_repo} repository:\n"
+      rtn << "Namespaces in cluster #{cluster_name} with no source code in the #{ENVIRONMENTS_REPO} repository:\n"
     end
 
     orphan_namespace_names.each do |name|
