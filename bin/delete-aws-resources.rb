@@ -29,9 +29,8 @@ def main(namespace, destroy)
   system("rm -rf .terraform") # clean up any leftover state from prior invocations
   tf_init(tf_executable, namespace)
 
-  # KUBE_CONFIG & KUBE_CTX env. vars must be in scope, or tf_plan will not work
+  # KUBE_CONFIG & KUBE_CTX env. vars must be in scope, or tf_plan/tf_apply will not work
   # see: https://www.terraform.io/docs/providers/kubernetes/index.html#argument-reference
-
   destroy ? tf_apply(tf_executable) : tf_plan(tf_executable)
 end
 
