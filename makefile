@@ -9,7 +9,7 @@ push:
 	docker push ministryofjustice/$(IMAGE):$(VERSION)
 
 # This expects to find a kube config file in ./kubecfg/config
-run:
+list-orphaned-namespaces:
 	docker run \
 	 -e PIPELINE_CLUSTER=$${PIPELINE_CLUSTER} \
 	 -e TFSTATE_AWS_REGION=$${TFSTATE_AWS_REGION} \
