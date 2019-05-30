@@ -1,5 +1,5 @@
 class ClusterNamespaceLister
-  attr_reader :kubeconfig
+  attr_reader :config_file, :context
 
   K8S_DEFAULT_NAMESPACES = %w(
     cert-manager
@@ -13,17 +13,20 @@ class ClusterNamespaceLister
   )
 
   def initialize(args)
-    @kubeconfig = Kubeclient::Config.read args.fetch(:kubeconfig)
+    @config_file = args.fetch(:config_file)
+    @context     = args.fetch(:context)
   end
 
   def namespace_names
-    context = kubeconfig.context(ENV.fetch('KUBECONTEXT'))
+    kubeconfig = Kubeclient::Config.read(config_file)
+
+    ctx = kubeconfig.context(context)
 
     client = Kubeclient::Client.new(
-      context.api_endpoint,
+      ctx.api_endpoint,
       'v1',
-      ssl_options: context.ssl_options,
-      auth_options: context.auth_options
+      ssl_options: ctx.ssl_options,
+      auth_options: ctx.auth_options
     )
 
     client.get_namespaces.map {
