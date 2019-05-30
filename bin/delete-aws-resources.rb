@@ -26,6 +26,7 @@ def main(namespace)
 end
 
 def check_prerequisites(namespace)
+  raise "Please supply namespace as the first command-line argument" if namespace.to_s.empty?
 
   # Ensure we have AWS credentials
   ENV.fetch('TFSTATE_AWS_ACCESS_KEY_ID')
