@@ -12,6 +12,11 @@ push:
 	docker tag $(IMAGE) ministryofjustice/$(IMAGE):$(VERSION)
 	docker push ministryofjustice/$(IMAGE):$(VERSION)
 
+# USAGE:
+# Set your environment variables (see example.env.live-0 & example.env.live-1), then:
+#
+#     make list-orphaned-namespaces
+#
 list-orphaned-namespaces:
 	docker run \
 	 -e PIPELINE_CLUSTER=$${PIPELINE_CLUSTER} \
@@ -29,7 +34,11 @@ list-orphaned-namespaces:
 	 -e KUBECONFIG_AWS_SECRET_ACCESS_KEY=$${KUBECONFIG_AWS_SECRET_ACCESS_KEY} \
 		orphaned-namespace-checker sh -c 'mkdir output; /app/bin/orphaned_namespaces.rb; cat output/check.txt'
 
-# USAGE: NAMESPACE=foo make delete-aws-resources
+# USAGE:
+# Set your environment variables (see example.env.live-0 & example.env.live-1), then:
+#
+#     NAMESPACE=foo make delete-aws-resources
+#
 delete-aws-resources:
 	docker run \
 	 -e TERRAFORM_PATH=/app/bin \
