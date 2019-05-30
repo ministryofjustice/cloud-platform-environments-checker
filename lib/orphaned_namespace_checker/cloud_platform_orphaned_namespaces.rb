@@ -5,7 +5,6 @@ class CloudPlatformOrphanNamespaces
 
   def initialize(args = {})
     @cluster_name  = env('PIPELINE_CLUSTER')
-    @state_bucket  = env('PIPELINE_STATE_BUCKET')
 
     local_kubeconfig = env('KUBECONFIG')
 
