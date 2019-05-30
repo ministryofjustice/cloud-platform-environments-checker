@@ -7,6 +7,8 @@ RSpec.describe CloudPlatformOrphanNamespaces do
     github_lister:   github_lister,
   } }
 
+  let(:github_lister) { double(GithubNamespaceLister, namespace_names: github_namespaces) }
+
   subject(:checker) { described_class.new(params) }
 
   before do
@@ -14,7 +16,7 @@ RSpec.describe CloudPlatformOrphanNamespaces do
   end
 
   context "when github lister returns empty list" do
-    let(:github_lister) { double(GithubNamespaceLister, namespace_names: []) }
+    let(:github_namespaces) { [] }
 
     it "raises an error" do
       expect {
