@@ -29,7 +29,11 @@ This script is executed regularly via Concourse, as defined [here][concourse-job
 
 ## bin/delete-aws-resources.rb
 
-This script expects the same environment variables as the `orphaned_namespaces` script, plus a namespace name. Given that, and only if the corresponding namespace is not defined in the [env-repo], the script will do a `terraform init` against that namespace, using our default, empty `main.tf` file. It will then do a `terraform plan` which should list all the AWS resources that will be deleted if `terraform apply` is executed.
+This script expects the same environment variables as the `orphaned_namespaces` script, plus a namespace name. Given that, and only if the corresponding namespace is not defined in the [env-repo], the script will do a `terraform init` against that namespace, using our default, empty `main.tf` file.
+
+If invoked in 'reporting' mode (the default), it will then do a `terraform plan` which should list all the AWS resources that would be deleted if `terraform apply` is executed.
+
+To invoke the script in 'destroy' mode, **WHICH WILL DESTROY ALL AWS RESOURCES AND THEN THE NAMESPACE ITSELF, WITH NO CONFIRMATION**, add the word 'destroy' as a second parameter, after the namespace name.
 
 Currently, this script is not being executed by the concourse pipeline, so must be run manually, if desired.
 
