@@ -11,5 +11,6 @@ class Kubeconfig
   def fetch_and_store
     config = s3client.get_object(bucket: bucket, key: key)
     File.open(local_target, 'w') { |f| f.puts(config.body.read) }
+    local_target
   end
 end
