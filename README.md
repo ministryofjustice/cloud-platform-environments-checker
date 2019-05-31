@@ -27,7 +27,7 @@ See the `makefile` for an example of how to run this script.
 
 This script is executed regularly via Concourse, as defined [here][concourse-job], with the output piped into Slack.
 
-## bin/delete-aws-resources.rb
+## bin/delete-namespace.rb
 
 This script expects the same environment variables as the `orphaned_namespaces` script, plus a namespace name. Given that, and only if the corresponding namespace is not defined in the [env-repo], the script will do a `terraform init` against that namespace, using our default, empty `main.tf` file.
 

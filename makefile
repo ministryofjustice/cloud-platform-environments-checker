@@ -42,13 +42,13 @@ list-orphaned-namespaces:
 #
 # This will just do a 'terraform plan' to show you what would be destroyed
 #
-#     NAMESPACE=foo make delete-aws-resources
+#     NAMESPACE=foo make delete-namespace
 #
 # To ACTUALLY DELETE AWS RESOURCES with no confirmation step, do this:
 #
-#     NAMESPACE=foo DESTROY=destroy make delete-aws-resources
+#     NAMESPACE=foo DESTROY=destroy make delete-namespace
 #
-delete-aws-resources:
+delete-namespace:
 	docker run \
 	 -e TERRAFORM_PATH=/app/bin \
 	 -e TFSTATE_AWS_ACCESS_KEY_ID=$${TFSTATE_AWS_ACCESS_KEY_ID} \
@@ -63,7 +63,7 @@ delete-aws-resources:
 	 -e KUBECONFIG_AWS_REGION=$${KUBECONFIG_AWS_REGION} \
 	 -e KUBECONFIG_AWS_ACCESS_KEY_ID=$${KUBECONFIG_AWS_ACCESS_KEY_ID} \
 	 -e KUBECONFIG_AWS_SECRET_ACCESS_KEY=$${KUBECONFIG_AWS_SECRET_ACCESS_KEY} \
-		orphaned-namespace-checker sh -c "mkdir output; /app/bin/delete-aws-resources.rb $${NAMESPACE} $${DESTROY}"
+		orphaned-namespace-checker sh -c "mkdir output; /app/bin/delete-namespace.rb $${NAMESPACE} $${DESTROY}"
 
 ##
 ## Usage examples for local development:
@@ -77,9 +77,9 @@ namespaces:
 plan:
 	. .env.live0; \
 	export TERRAFORM_PATH=$$(dirname $$(which terraform)); \
-	./bin/delete-aws-resources.rb jenny-myapp-dev
+	./bin/delete-namespace.rb money-to-prisoners-prod
 
 destroy:
 	. .env.live0; \
 	export TERRAFORM_PATH=$$(dirname $$(which terraform)); \
-	./bin/delete-aws-resources.rb jenny-myapp-dev destroy
+	./bin/delete-namespace.rb money-to-prisoners-prod destroy
