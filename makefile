@@ -12,6 +12,9 @@ push:
 	docker tag $(IMAGE) ministryofjustice/$(IMAGE):$(VERSION)
 	docker push ministryofjustice/$(IMAGE):$(VERSION)
 
+test:
+	bundle exec rspec
+
 # USAGE:
 # Set your environment variables (see example.env.live-0 & example.env.live-1), then:
 #
