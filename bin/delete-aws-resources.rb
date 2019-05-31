@@ -18,7 +18,12 @@ def main(namespace, destroy)
     local_target:          env('KUBE_CONFIG'),
     context:               env('KUBE_CTX'),
   }
-  Kubeconfig.new(kubeconfig).fetch_and_store
+  config = Kubeconfig.new(kubeconfig).fetch_and_store
+
+  k8s_client = ClusterNamespaceLister.new(
+    config_file: config,
+    context:     kubeconfig.fetch(:context)
+  ).kubeclient
 
   puts
   puts "About to delete AWS resources for namespace: #{namespace}"
@@ -31,7 +36,11 @@ def main(namespace, destroy)
 
   # KUBE_CONFIG & KUBE_CTX env. vars must be in scope, or tf_plan/tf_apply will not work
   # see: https://www.terraform.io/docs/providers/kubernetes/index.html#argument-reference
-  destroy ? tf_apply(tf_executable) : tf_plan(tf_executable)
+  if destroy
+    destroy_namespace(terraform: tf_executable, namespace: namespace, k8s_client: k8s_client)
+  else
+    tf_plan(tf_executable)
+  end
 end
 
 def check_prerequisites(namespace)
@@ -88,6 +97,19 @@ def tf_plan(tf_executable)
     #{tf_executable} plan
   EOF
   system cmd
+end
+
+def destroy_namespace(args)
+  tf         = args.fetch(:terraform)
+  namespace  = args.fetch(:namespace)
+  k8s_client = args.fetch(:k8s_client)
+
+  puts
+  puts "Removing namespace #{namespace} from the cluster"
+  puts
+
+  tf_apply(tf)
+  k8s_client.delete_namespace(namespace)
 end
 
 # Apply the terraform plan, with no confirmation step.
