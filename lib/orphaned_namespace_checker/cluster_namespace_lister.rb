@@ -17,21 +17,20 @@ class ClusterNamespaceLister
     @context     = args.fetch(:context)
   end
 
-  def namespace_names
+  def kubeclient
     kubeconfig = Kubeclient::Config.read(config_file)
-
     ctx = kubeconfig.context(context)
-
-    client = Kubeclient::Client.new(
+    Kubeclient::Client.new(
       ctx.api_endpoint,
       'v1',
       ssl_options: ctx.ssl_options,
       auth_options: ctx.auth_options
     )
+  end
 
-    client.get_namespaces.map {
+  def namespace_names
+    kubeclient.get_namespaces.map {
       |n| n.metadata.name
     } - K8S_DEFAULT_NAMESPACES
   end
-
 end
