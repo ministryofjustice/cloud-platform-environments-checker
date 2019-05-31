@@ -86,3 +86,6 @@ destroy:
 	. .env.live0; \
 	export TERRAFORM_PATH=$$(dirname $$(which terraform)); \
 	./bin/delete-namespace.rb money-to-prisoners-prod destroy
+
+shell:
+	docker run --rm -it $(IMAGE) sh
