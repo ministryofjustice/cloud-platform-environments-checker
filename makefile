@@ -12,6 +12,9 @@ push:
 	docker tag $(IMAGE) ministryofjustice/$(IMAGE):$(VERSION)
 	docker push ministryofjustice/$(IMAGE):$(VERSION)
 
+pull:
+	docker pull ministryofjustice/$(IMAGE):$(VERSION)
+
 test:
 	bundle exec rspec
 
