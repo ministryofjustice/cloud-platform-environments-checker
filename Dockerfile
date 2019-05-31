@@ -1,4 +1,4 @@
-FROM hashicorp/terraform:0.11.11 AS terraform
+FROM hashicorp/terraform:0.11.14 AS terraform
 
 FROM ruby:2.5-alpine
 
