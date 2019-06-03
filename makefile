@@ -1,11 +1,7 @@
 IMAGE := orphaned-namespace-checker
 VERSION := 2.7
 
-# This is the 'empty' main.tf file that we add, by default, to any namespaces users create
-CANONICAL_MAIN_TF_URL = 'https://raw.githubusercontent.com/ministryofjustice/cloud-platform-environments/master/namespace-resources/resources-main-tf'
-
 build:
-	curl $(CANONICAL_MAIN_TF_URL) > main.tf
 	docker build -t $(IMAGE) .
 
 push:
