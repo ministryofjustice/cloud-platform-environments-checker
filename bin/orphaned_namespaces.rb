@@ -24,7 +24,7 @@ def main
       region: env('TFSTATE_AWS_REGION'),
       credentials: Aws::Credentials.new(env('TFSTATE_AWS_ACCESS_KEY_ID'), env('TFSTATE_AWS_SECRET_ACCESS_KEY')),
     ),
-    bucket: env('PIPELINE_STATE_BUCKET'),
+    bucket: env('TFSTATE_BUCKET'),
     bucket_prefix: env('TFSTATE_BUCKET_PREFIX'),
   }
 
@@ -53,7 +53,7 @@ def check_prerequisites
     KUBERNETES_CLUSTER
     KUBE_CONFIG
     KUBE_CTX
-    PIPELINE_STATE_BUCKET
+    TFSTATE_BUCKET
     TFSTATE_AWS_ACCESS_KEY_ID
     TFSTATE_AWS_REGION
     TFSTATE_AWS_SECRET_ACCESS_KEY
