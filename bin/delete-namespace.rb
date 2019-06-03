@@ -81,8 +81,8 @@ def tf_init(tf_executable, namespace)
   #{tf_executable} init \
     -backend-config="access_key=${TFSTATE_AWS_ACCESS_KEY_ID}" \
     -backend-config="secret_key=${TFSTATE_AWS_SECRET_ACCESS_KEY}" \
-    -backend-config="key=#{env('PIPELINE_CLUSTER')}/#{namespace}/terraform.tfstate" \
     -backend-config="bucket=#{env('TFSTATE_BUCKET')}" \
+    -backend-config="key=#{env('KUBERNETES_CLUSTER')}/#{namespace}/terraform.tfstate" \
     -backend-config="region=#{env('TFSTATE_AWS_REGION')}"
   EOF
   system cmd
