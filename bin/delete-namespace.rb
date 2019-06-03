@@ -31,8 +31,13 @@ def main(namespace, destroy)
 
   tf_executable = "#{env('TERRAFORM_PATH')}/terraform"
 
-  tf_init(tf_executable, namespace)
   system("rm -rf main.tf .terraform") # clean up any leftover state from prior invocations
+
+  tf_init(
+    cluster: ENV.fetch('KUBERNETES_CLUSTER'),
+    namespace: namespace,
+    terraform: tf_executable,
+  )
 
   # KUBE_CONFIG & KUBE_CTX env. vars must be in scope, or tf_plan/tf_apply will not work
   # see: https://www.terraform.io/docs/providers/kubernetes/index.html#argument-reference
@@ -74,7 +79,11 @@ def namespace_defined_in_code?(namespace)
   ).namespace_exists?(namespace)
 end
 
-def tf_init(tf_executable, namespace)
+def tf_init(args)
+  tf_executable = args.fetch(:terraform)
+  namespace = args.fetch(:namespace)
+  cluster = args.fetch(:cluster)
+
   # Get AWS credentials from the environment, via bash, so that we don't
   # accidentally log them in cleartext, if all commands are logged.
   cmd = <<~EOF
@@ -82,7 +91,7 @@ def tf_init(tf_executable, namespace)
     -backend-config="access_key=${TFSTATE_AWS_ACCESS_KEY_ID}" \
     -backend-config="secret_key=${TFSTATE_AWS_SECRET_ACCESS_KEY}" \
     -backend-config="bucket=#{env('TFSTATE_BUCKET')}" \
-    -backend-config="key=#{env('KUBERNETES_CLUSTER')}/#{namespace}/terraform.tfstate" \
+    -backend-config="key=#{cluster}/#{namespace}/terraform.tfstate" \
     -backend-config="region=#{env('TFSTATE_AWS_REGION')}"
   EOF
   system cmd
