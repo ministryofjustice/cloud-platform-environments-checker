@@ -31,8 +31,8 @@ def main(namespace, destroy)
 
   tf_executable = "#{env('TERRAFORM_PATH')}/terraform"
 
-  system("rm -rf .terraform") # clean up any leftover state from prior invocations
   tf_init(tf_executable, namespace)
+  system("rm -rf main.tf .terraform") # clean up any leftover state from prior invocations
 
   # KUBE_CONFIG & KUBE_CTX env. vars must be in scope, or tf_plan/tf_apply will not work
   # see: https://www.terraform.io/docs/providers/kubernetes/index.html#argument-reference
