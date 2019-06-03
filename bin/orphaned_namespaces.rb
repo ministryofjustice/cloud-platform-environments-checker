@@ -57,7 +57,7 @@ def check_prerequisites
     TFSTATE_AWS_SECRET_ACCESS_KEY
     KUBERNETES_CLUSTER
     PIPELINE_STATE_BUCKET
-    BUCKET_PREFIX
+    TFSTATE_BUCKET_PREFIX
   ).each do |var|
     env(var)
   end
