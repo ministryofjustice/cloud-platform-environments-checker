@@ -4,6 +4,13 @@ require "#{File.dirname(__FILE__)}/../lib/orphaned_namespace_checker"
 
 ENVIRONMENTS_GITHUB_REPO = 'cloud-platform-environments'
 
+# live0 and live1 have different default regions for their AWS resources, so we need a different
+# main.tf file for each one.
+EMPTY_MAIN_TF_URLS = {
+  'cloud-platform-live-0.k8s.integration.dsd.io' => 'https://raw.githubusercontent.com/ministryofjustice/cloud-platform-environments-checker/master/resources/live0-main.tf',
+  'live-1.cloud-platform.service.justice.gov.uk' => 'https://raw.githubusercontent.com/ministryofjustice/cloud-platform-environments/master/namespace-resources/resources-main-tf'
+}
+
 def main(namespace, destroy)
   check_prerequisites(namespace)
 
@@ -84,6 +91,8 @@ def tf_init(args)
   namespace = args.fetch(:namespace)
   cluster = args.fetch(:cluster)
 
+  create_empty_main_tf(cluster)
+
   # Get AWS credentials from the environment, via bash, so that we don't
   # accidentally log them in cleartext, if all commands are logged.
   cmd = <<~EOF
@@ -95,6 +104,12 @@ def tf_init(args)
     -backend-config="region=#{env('TFSTATE_AWS_REGION')}"
   EOF
   system cmd
+end
+
+def create_empty_main_tf(cluster)
+  url = EMPTY_MAIN_TF_URLS.fetch(cluster)
+  content = open(url).read
+  File.open('main.tf', 'w') { |f| f.puts(content) }
 end
 
 def tf_plan(tf_executable)
