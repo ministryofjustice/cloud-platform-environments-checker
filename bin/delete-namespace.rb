@@ -59,7 +59,7 @@ def check_prerequisites(namespace)
     TFSTATE_AWS_REGION
     TERRAFORM_PATH
     PIPELINE_STATE_BUCKET
-    PIPELINE_CLUSTER
+    KUBERNETES_CLUSTER
   ).each do |var|
     env(var)
   end
@@ -70,7 +70,7 @@ end
 def namespace_defined_in_code?(namespace)
   GithubNamespaceLister.new(
     env_repo: ENVIRONMENTS_GITHUB_REPO,
-    cluster_name: env('PIPELINE_CLUSTER')
+    cluster_name: env('KUBERNETES_CLUSTER')
   ).namespace_exists?(namespace)
 end
 

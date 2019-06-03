@@ -29,7 +29,7 @@ def main
   }
 
   result = CloudPlatformOrphanNamespaces.new(
-    cluster_name: env('PIPELINE_CLUSTER'),
+    cluster_name: env('KUBERNETES_CLUSTER'),
     kubeconfig: kubeconfig,
     tfstate:    tfstate,
   ).report
@@ -55,7 +55,7 @@ def check_prerequisites
     TFSTATE_AWS_REGION
     TFSTATE_AWS_ACCESS_KEY_ID
     TFSTATE_AWS_SECRET_ACCESS_KEY
-    PIPELINE_CLUSTER
+    KUBERNETES_CLUSTER
     PIPELINE_STATE_BUCKET
     BUCKET_PREFIX
   ).each do |var|
