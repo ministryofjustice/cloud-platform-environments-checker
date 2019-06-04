@@ -4,8 +4,11 @@ VERSION := 2.8
 build:
 	docker build -t $(IMAGE) .
 
+tag:
+	docker tag $(IMAGE) $(IMAGE):$(VERSION)
+
 push:
-	docker tag $(IMAGE) ministryofjustice/$(IMAGE):$(VERSION)
+	make tag
 	docker push $(IMAGE):$(VERSION)
 
 pull:
