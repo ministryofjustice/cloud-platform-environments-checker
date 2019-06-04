@@ -1,4 +1,4 @@
-IMAGE := orphaned-namespace-checker
+IMAGE := ministryofjustice/orphaned-namespace-checker
 VERSION := 2.8
 
 build:
@@ -6,10 +6,10 @@ build:
 
 push:
 	docker tag $(IMAGE) ministryofjustice/$(IMAGE):$(VERSION)
-	docker push ministryofjustice/$(IMAGE):$(VERSION)
+	docker push $(IMAGE):$(VERSION)
 
 pull:
-	docker pull ministryofjustice/$(IMAGE):$(VERSION)
+	docker pull $(IMAGE):$(VERSION)
 
 test:
 	bundle exec rspec
@@ -35,7 +35,7 @@ list-orphaned-namespaces:
 	 -e KUBECONFIG_AWS_REGION=$${KUBECONFIG_AWS_REGION} \
 	 -e KUBECONFIG_AWS_ACCESS_KEY_ID=$${KUBECONFIG_AWS_ACCESS_KEY_ID} \
 	 -e KUBECONFIG_AWS_SECRET_ACCESS_KEY=$${KUBECONFIG_AWS_SECRET_ACCESS_KEY} \
-		orphaned-namespace-checker sh -c 'mkdir output; /app/bin/orphaned_namespaces.rb; cat output/check.txt'
+	 $(IMAGE):$(VERSION) sh -c 'mkdir output; /app/bin/orphaned_namespaces.rb; cat output/check.txt'
 
 # USAGE:
 # Set your environment variables (see example.env.live-0 & example.env.live-1), then:
@@ -63,7 +63,7 @@ delete-namespace:
 	 -e KUBECONFIG_AWS_REGION=$${KUBECONFIG_AWS_REGION} \
 	 -e KUBECONFIG_AWS_ACCESS_KEY_ID=$${KUBECONFIG_AWS_ACCESS_KEY_ID} \
 	 -e KUBECONFIG_AWS_SECRET_ACCESS_KEY=$${KUBECONFIG_AWS_SECRET_ACCESS_KEY} \
-		orphaned-namespace-checker sh -c "mkdir output; /app/bin/delete-namespace.rb $${NAMESPACE} $${DESTROY}"
+	 $(IMAGE):$(VERSION) sh -c "mkdir output; /app/bin/delete-namespace.rb $${NAMESPACE} $${DESTROY}"
 
 ##
 ## Usage examples for local development:
