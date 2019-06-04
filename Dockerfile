@@ -14,6 +14,5 @@ RUN bundle install --without development test
 
 COPY lib ./lib
 COPY bin ./bin
-COPY main.tf .
 
 COPY --from=terraform bin/terraform /app/bin/terraform
