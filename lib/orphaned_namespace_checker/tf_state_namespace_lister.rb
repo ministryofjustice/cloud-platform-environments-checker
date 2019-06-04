@@ -17,7 +17,7 @@ class TFStateNamespaceLister
     tf_objects = s3client.list_objects(bucket: bucket)
 
     tf_objects.contents.map do |obj|
-      regexp = %r[#{bucket_prefix}/(.*)/terraform.tfstate]
+      regexp = %r[#{bucket_prefix}(.*)/terraform.tfstate]
       if regexp.match(obj.key)
         name = $1
         resources = aws_resources(name)
@@ -31,7 +31,7 @@ class TFStateNamespaceLister
   private
 
   def aws_resources(namespace_name)
-    key = "#{bucket_prefix}/#{namespace_name}/terraform.tfstate"
+    key = "#{bucket_prefix}#{namespace_name}/terraform.tfstate"
     tfstate = s3client.get_object(bucket: bucket, key: key)
     obj = JSON.parse tfstate.body.read
 
