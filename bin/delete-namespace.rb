@@ -71,6 +71,7 @@ def check_prerequisites(namespace)
     TFSTATE_AWS_REGION
     TERRAFORM_PATH
     TFSTATE_BUCKET
+    TFSTATE_BUCKET_PREFIX
     KUBERNETES_CLUSTER
   ).each do |var|
     env(var)
@@ -100,7 +101,7 @@ def tf_init(args)
     -backend-config="access_key=${TFSTATE_AWS_ACCESS_KEY_ID}" \
     -backend-config="secret_key=${TFSTATE_AWS_SECRET_ACCESS_KEY}" \
     -backend-config="bucket=#{env('TFSTATE_BUCKET')}" \
-    -backend-config="key=#{cluster}/#{namespace}/terraform.tfstate" \
+    -backend-config="key=#{env('TFSTATE_BUCKET_PREFIX')}#{cluster}/#{namespace}/terraform.tfstate" \
     -backend-config="region=#{env('TFSTATE_AWS_REGION')}"
   EOF
   system cmd
