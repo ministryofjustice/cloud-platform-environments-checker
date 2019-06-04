@@ -20,7 +20,10 @@ class TFStateNamespaceLister
       regexp = %r[#{bucket_prefix}/(.*)/terraform.tfstate]
       if regexp.match(obj.key)
         name = $1
-        TFState.new(name, aws_resources(name))
+        resources = aws_resources(name)
+        # live-1.cloud-platform.service.justice.gov.uk/demo-app -> demo-app
+        namespace = name.split('/').last
+        TFState.new(namespace, resources)
       end
     end.compact
   end
