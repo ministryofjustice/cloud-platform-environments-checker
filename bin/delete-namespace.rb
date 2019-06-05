@@ -83,7 +83,8 @@ end
 def namespace_defined_in_code?(namespace)
   GithubNamespaceLister.new(
     env_repo: ENVIRONMENTS_GITHUB_REPO,
-    cluster_name: env('KUBERNETES_CLUSTER')
+    cluster_name: env('KUBERNETES_CLUSTER'),
+    github_token: env('GITHUB_TOKEN'),
   ).namespace_exists?(namespace)
 end
 

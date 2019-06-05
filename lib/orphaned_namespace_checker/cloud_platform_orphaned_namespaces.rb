@@ -7,7 +7,7 @@ class CloudPlatformOrphanNamespaces
     @cluster_name   = args.fetch(:cluster_name)
     @kubeconfig     = args.fetch(:kubeconfig)
     @tfstate_lister = args.fetch(:tfstate_lister) { TFStateNamespaceLister.new(args.fetch(:tfstate)) }
-    @github_lister  = args.fetch(:github_lister)  { GithubNamespaceLister.new(env_repo: ENVIRONMENTS_REPO, cluster_name: cluster_name) }
+    @github_lister  = args.fetch(:github_lister)  { GithubNamespaceLister.new(env_repo: ENVIRONMENTS_REPO, cluster_name: cluster_name, github_token: env('GITHUB_TOKEN')) }
     @cluster_lister = args.fetch(:cluster_lister) { ClusterNamespaceLister.new(config_file: kubeconfig.fetch(:local_target), context: kubeconfig.fetch(:context)) }
   end
 
