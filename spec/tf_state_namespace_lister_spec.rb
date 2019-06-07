@@ -1,10 +1,13 @@
 RSpec.describe TFStateNamespaceLister do
   let(:bucket_contents) { double(:bucket_contents, contents: contents) }
-  let(:s3client) { double(:s3client, list_objects: bucket_contents) }
+  let(:io) { double(:io, read: state) }
+  let(:s3obj) { double(:s3obj, body: double(:io, read: '{ "modules": [] }')) }
+  let(:s3client) { double(:s3client, list_objects: bucket_contents, get_object: s3obj) }
+  let(:bucket_prefix) { 'qqq' }
 
   let(:params) { {
     bucket: double(:bucket),
-    bucket_prefix: 'qqq',
+    bucket_prefix: bucket_prefix,
     s3client: s3client,
   } }
 
@@ -22,9 +25,7 @@ RSpec.describe TFStateNamespaceLister do
   context "when there is a single namespace" do
     file = "#{File.dirname(__FILE__)}/fixtures/terraform.tfstate"
     let(:state) { File.read(file) }
-    let(:io) { double(:io, read: state) }
     let(:s3obj) { double(:s3obj, key: 'qqq/money-to-prisoners-prod/terraform.tfstate', body: io) }
-    let(:s3client) { double(:s3client, list_objects: bucket_contents, get_object: s3obj) }
     let(:contents) { [s3obj] }
 
     let(:resources) { [
