@@ -43,4 +43,42 @@ RSpec.describe TFStateNamespaceLister do
       expect(lister.namespaces).to eq(expected)
     end
   end
+
+  context "given a list of s3 bucket objects" do
+    let(:obj1) { double(Aws::S3::Types::Object, key: key1) }
+    let(:obj2) { double(Aws::S3::Types::Object, key: key2) }
+    let(:obj3) { double(Aws::S3::Types::Object, key: key3) }
+
+    let(:contents) { [obj1, obj2, obj3] }
+
+    let(:namespaces) { [
+      TFStateNamespaceLister::TFState.new('weekly-app-deploy-oa', []),
+      TFStateNamespaceLister::TFState.new('whereabouts-dev', []),
+      TFStateNamespaceLister::TFState.new('vv-myapp-dev', []),
+    ] }
+
+    context "in live0" do
+      let(:key1) { "cloud-platform-live-0.k8s.integration.dsd.io/weekly-app-deploy-oa/terraform.tfstate" }
+      let(:key2) { "cloud-platform-live-0.k8s.integration.dsd.io/whereabouts-dev/terraform.tfstate" }
+      let(:key3) { "cloud-platform-live-0.k8s.integration.dsd.io/vv-myapp-dev/terraform.tfstate" }
+
+      let(:bucket_prefix) { 'cloud-platform-live-0.k8s.integration.dsd.io/' }
+
+      it "extracts namespace names" do
+        expect(lister.namespaces).to eq(namespaces)
+      end
+    end
+
+    context "in live1" do
+      let(:key1) { "weekly-app-deploy-oa/terraform.tfstate" }
+      let(:key2) { "whereabouts-dev/terraform.tfstate" }
+      let(:key3) { "vv-myapp-dev/terraform.tfstate" }
+
+      let(:bucket_prefix) { '' }
+
+      it "extracts namespace names" do
+        expect(lister.namespaces).to eq(namespaces)
+      end
+    end
+  end
 end
