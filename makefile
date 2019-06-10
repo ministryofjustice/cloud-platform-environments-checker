@@ -1,5 +1,5 @@
 IMAGE := ministryofjustice/orphaned-namespace-checker
-VERSION := 2.11
+VERSION := 2.12
 
 build:
 	docker build -t $(IMAGE) .
