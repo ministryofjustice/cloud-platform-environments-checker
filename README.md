@@ -11,9 +11,9 @@ This project is executed regularly by a [concourse-job], to generate a report. T
 You need to have docker installed on your computer.
 
 * Check out a copy of this repository
-* Copy `example.env.live0` to `.env.live0`
 * Copy `example.env.live1` to `.env.live1`
-* Replace the placeholders in the `.env.*` files with valid AWS credentials
+* Copy `example.env.live0` to `.env.live0`
+* Replace the placeholders in the `.env.*` files with valid AWS credentials and GITHUB_TOKEN (with `public_repo` scope)
 * `make pull`
 
 ## Usage
@@ -22,19 +22,19 @@ You need to have docker installed on your computer.
 
 To list namespaces which exist in the cluster, but which are not defined in the [env-repo]
 
-    . .env.live0; make list-orphaned-namespaces
+    . .env.live1; make list-orphaned-namespaces
 
 ### Listing AWS resources in an orphaned namespaces
 
 Assuming an orphaned namespace called `mynamespace`
 
-    . .env.live0; NAMESPACE=mynamespace make delete-namespace
+    . .env.live1; NAMESPACE=mynamespace make delete-namespace
 
-### Deleting AWS resources and the orphaned namespace which owns them
+### Deleting AWS resources and the namespace which owns them
 
-Assuming an orphaned namespace called `mynamespace`
+Assuming a namespace called `mynamespace`
 
-    . .env.live0; NAMESPACE=mynamespace DESTROY=destroy make delete-namespace
+    . .env.live1; NAMESPACE=mynamespace DESTROY=destroy make delete-namespace
 
 NB: This will **delete all AWS resources owned by the namespace, and the namespace itself** You will not be prompted for confirmation.
 
@@ -71,7 +71,7 @@ These are stored in different AWS accounts and regions, depending on the cluster
 
 These scripts require many environment variables to be set. See `example.env.live-0` and `example.env.live-1` for a list.
 
-You can copy these examples to, e.g. `.env.live1` and `.env.live0` (which will be `git ignore`d) and supply valid AWS credentials, in order to run these scripts locally (either directly, or via the docker image).
+You can copy these examples to, e.g. `.env.live1` and `.env.live0` (which will be `git ignore`d) and supply valid AWS credentials and GITHUB_TOKEN, in order to run these scripts locally (either directly, or via the docker image).
 
 ### bin/orphaned_namespaces.rb
 
@@ -81,7 +81,7 @@ This script is executed regularly via Concourse, as defined [here][concourse-job
 
 ### bin/delete-namespace.rb
 
-This script expects the same environment variables as the `orphaned_namespaces` script, plus a namespace name. Given that, and only if the corresponding namespace is not defined in the [env-repo], the script will do a `terraform init` against that namespace, using our default, empty `main.tf` file.
+This script expects the same environment variables as the `orphaned_namespaces` script, plus a namespace name. The script will do a `terraform init` against that namespace, using our default, empty `main.tf` file, which it fetches from the [env-repo].
 
 If invoked in 'reporting' mode (the default), it will then do a `terraform plan` which should list all the AWS resources that would be deleted if `terraform apply` is executed.
 
