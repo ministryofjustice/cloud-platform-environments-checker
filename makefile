@@ -1,13 +1,15 @@
 IMAGE := ministryofjustice/orphaned-namespace-checker
 VERSION := 2.13
 
-build:
+build: .built-image
+
+.built-image: Gemfile* makefile bin/* lib/* lib/*/*
 	docker build -t $(IMAGE) .
 
-tag:
+tag: build
 	docker tag $(IMAGE) $(IMAGE):$(VERSION)
 
-push:
+push: build
 	make tag
 	docker push $(IMAGE):$(VERSION)
 
