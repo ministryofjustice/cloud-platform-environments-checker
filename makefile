@@ -38,6 +38,7 @@ list-orphaned-namespaces:
 	 -e KUBECONFIG_AWS_REGION=$${KUBECONFIG_AWS_REGION} \
 	 -e KUBECONFIG_AWS_ACCESS_KEY_ID=$${KUBECONFIG_AWS_ACCESS_KEY_ID} \
 	 -e KUBECONFIG_AWS_SECRET_ACCESS_KEY=$${KUBECONFIG_AWS_SECRET_ACCESS_KEY} \
+	 -e PIPELINE_TERRAFORM_STATE_LOCK_TABLE=cloud-platform-environments-terraform-lock \
 	 -e GITHUB_TOKEN=$${GITHUB_TOKEN} \
 	 $(IMAGE):$(VERSION) sh -c 'mkdir output; /app/bin/orphaned_namespaces.rb; cat output/check.txt'
 
@@ -68,6 +69,7 @@ delete-namespace:
 	 -e KUBECONFIG_AWS_REGION=$${KUBECONFIG_AWS_REGION} \
 	 -e KUBECONFIG_AWS_ACCESS_KEY_ID=$${KUBECONFIG_AWS_ACCESS_KEY_ID} \
 	 -e KUBECONFIG_AWS_SECRET_ACCESS_KEY=$${KUBECONFIG_AWS_SECRET_ACCESS_KEY} \
+	 -e PIPELINE_TERRAFORM_STATE_LOCK_TABLE=cloud-platform-environments-terraform-lock \
 	 -e GITHUB_TOKEN=$${GITHUB_TOKEN} \
 	 $(IMAGE):$(VERSION) sh -c "mkdir output; /app/bin/delete-namespace.rb $${NAMESPACE} $${DESTROY}"
 
