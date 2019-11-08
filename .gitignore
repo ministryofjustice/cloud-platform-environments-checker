@@ -5,3 +5,4 @@
 .terraform
 main.tf
 output/check.txt
+.built-image

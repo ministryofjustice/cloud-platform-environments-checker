@@ -59,20 +59,21 @@ def check_prerequisites(namespace)
   raise "Please supply namespace as the first command-line argument" if namespace.to_s.empty?
 
   %w(
-    KUBECONFIG_AWS_REGION
     KUBECONFIG_AWS_ACCESS_KEY_ID
+    KUBECONFIG_AWS_REGION
     KUBECONFIG_AWS_SECRET_ACCESS_KEY
     KUBECONFIG_S3_BUCKET
     KUBECONFIG_S3_KEY
+    KUBERNETES_CLUSTER
     KUBE_CONFIG
     KUBE_CTX
-    TFSTATE_AWS_ACCESS_KEY_ID
-    TFSTATE_AWS_SECRET_ACCESS_KEY
-    TFSTATE_AWS_REGION
+    PIPELINE_TERRAFORM_STATE_LOCK_TABLE
     TERRAFORM_PATH
+    TFSTATE_AWS_ACCESS_KEY_ID
+    TFSTATE_AWS_REGION
+    TFSTATE_AWS_SECRET_ACCESS_KEY
     TFSTATE_BUCKET
     TFSTATE_BUCKET_PREFIX
-    KUBERNETES_CLUSTER
   ).each do |var|
     env(var)
   end
@@ -103,6 +104,7 @@ def tf_init(args)
     -backend-config="secret_key=${TFSTATE_AWS_SECRET_ACCESS_KEY}" \
     -backend-config="bucket=#{env('TFSTATE_BUCKET')}" \
     -backend-config="key=#{env('TFSTATE_BUCKET_PREFIX')}#{cluster}/#{namespace}/terraform.tfstate" \
+    -backend-config="dynamodb_table=${PIPELINE_TERRAFORM_STATE_LOCK_TABLE}" \
     -backend-config="region=#{env('TFSTATE_AWS_REGION')}"
   EOF
   system cmd
