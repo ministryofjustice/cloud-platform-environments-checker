@@ -1,9 +1,9 @@
-require 'bundler/setup'
-require 'openid_connect'
-require 'kubeclient'
-require 'open-uri'
-require 'aws-sdk-s3'
-require 'json'
+require "bundler/setup"
+require "openid_connect"
+require "kubeclient"
+require "open-uri"
+require "aws-sdk-s3"
+require "json"
 
 require "#{File.dirname(__FILE__)}/orphaned_namespace_checker/cloud_platform_orphaned_namespaces"
 require "#{File.dirname(__FILE__)}/orphaned_namespace_checker/kubeconfig"

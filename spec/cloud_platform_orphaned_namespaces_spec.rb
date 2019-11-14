@@ -2,13 +2,15 @@ RSpec.describe CloudPlatformOrphanNamespaces do
   let(:cluster_namespaces) { [] }
   let(:tfstate_namespaces) { [] }
 
-  let(:params) { {
-    cluster_name:    'foo',
-    kubeconfig:      double(fetch:            true),
-    tfstate_lister:  double(namespaces:       tfstate_namespaces),
-    cluster_lister:  double(namespace_names:  cluster_namespaces),
-    github_lister:   github_lister,
-  } }
+  let(:params) {
+    {
+      cluster_name: "foo",
+      kubeconfig: double(fetch: true),
+      tfstate_lister: double(namespaces: tfstate_namespaces),
+      cluster_lister: double(namespace_names: cluster_namespaces),
+      github_lister: github_lister,
+    }
+  }
 
   let(:github_lister) { double(GithubNamespaceLister, namespace_names: github_namespaces) }
 
@@ -29,23 +31,22 @@ RSpec.describe CloudPlatformOrphanNamespaces do
   end
 
   context "when every namespace has source code" do
-    let(:github_namespaces) { ['is-in-github'] }
-    let(:cluster_namespaces) { ['is-in-github'] }
+    let(:github_namespaces) { ["is-in-github"] }
+    let(:cluster_namespaces) { ["is-in-github"] }
 
     it "produces no output" do
-      expect(checker.report).to eq('')
+      expect(checker.report).to eq("")
     end
   end
 
   context "when a namespace has no source code" do
-    let(:github_namespaces)  { ['is-in-github'] }
-    let(:cluster_namespaces) { ['is-in-github', 'has-no-source-code'] }
+    let(:github_namespaces) { ["is-in-github"] }
+    let(:cluster_namespaces) { ["is-in-github", "has-no-source-code"] }
 
     it "includes namespace in the report" do
       expected = <<~EOF
-      Namespaces in cluster foo with no source code in the cloud-platform-environments repository:
-
-      has-no-source-code
+        Namespaces in cluster foo with no source code in the cloud-platform-environments repository:
+         has-no-source-code
 
       EOF
       expect(checker.report).to eq(expected)
@@ -53,24 +54,25 @@ RSpec.describe CloudPlatformOrphanNamespaces do
   end
 
   context "when orphan namespace has AWS resources" do
-    let(:github_namespaces)  { ['is-in-github'] }
-    let(:cluster_namespaces) { ['is-in-github', 'has-no-source-code'] }
+    let(:github_namespaces) { ["is-in-github"] }
+    let(:cluster_namespaces) { ["is-in-github", "has-no-source-code"] }
 
-    let(:aws_resources) { [
-      { type: 's3-bucket',    id: 1 },
-      { type: 'rds-instance', id: 2 },
-    ] }
-    let(:namespace) { double(name: 'has-no-source-code', aws_resources: aws_resources) }
-    let(:tfstate_namespaces) { [ namespace ] }
+    let(:aws_resources) {
+      [
+        {type: "s3-bucket", id: 1},
+        {type: "rds-instance", id: 2},
+      ]
+    }
+    let(:namespace) { double(name: "has-no-source-code", aws_resources: aws_resources) }
+    let(:tfstate_namespaces) { [namespace] }
 
     it "lists the AWS resources" do
       expected = <<~EOF
-      Namespaces in cluster foo with no source code in the cloud-platform-environments repository:
-
-      has-no-source-code
-        AWS Resources:
-          s3-bucket: 1
-          rds-instance: 2
+        Namespaces in cluster foo with no source code in the cloud-platform-environments repository:
+         has-no-source-code
+          AWS Resources:
+            s3-bucket: 1
+            rds-instance: 2
 
       EOF
       expect(checker.report).to eq(expected)

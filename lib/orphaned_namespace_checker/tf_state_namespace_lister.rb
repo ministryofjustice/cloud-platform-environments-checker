@@ -1,14 +1,14 @@
 class TFStateNamespaceLister
   attr_reader :bucket, :bucket_prefix, :s3client
 
-  FILTERED_AWS_RESOURCES = ['aws_iam_access_key']
+  FILTERED_AWS_RESOURCES = ["aws_iam_access_key"]
 
   TFState = Struct.new(:name, :aws_resources)
 
   def initialize(args)
-    @bucket        = args.fetch(:bucket)
+    @bucket = args.fetch(:bucket)
     @bucket_prefix = args.fetch(:bucket_prefix)
-    @s3client      = args.fetch(:s3client)
+    @s3client = args.fetch(:s3client)
   end
 
   # If a namespace is defined in the terraform state for the cluster
@@ -16,16 +16,16 @@ class TFStateNamespaceLister
   def namespaces
     tf_objects = s3client.list_objects(bucket: bucket)
 
-    tf_objects.contents.map do |obj|
-      regexp = %r[#{bucket_prefix}(.*)/terraform.tfstate]
+    tf_objects.contents.map { |obj|
+      regexp = %r{#{bucket_prefix}(.*)/terraform.tfstate}
       if regexp.match(obj.key)
         name = $1
         resources = aws_resources(name)
         # live-1.cloud-platform.service.justice.gov.uk/demo-app -> demo-app
-        namespace = name.split('/').last
+        namespace = name.split("/").last
         TFState.new(namespace, resources)
       end
-    end.compact
+    }.compact
   end
 
   private
@@ -37,8 +37,8 @@ class TFStateNamespaceLister
 
     rtn = []
 
-    obj.fetch('modules').each do |tf_module|
-      tf_module.fetch('resources').each do |resource|
+    obj.fetch("modules").each do |tf_module|
+      tf_module.fetch("resources").each do |resource|
         rtn << get_aws_type_and_id(resource)
       end
     end
@@ -49,10 +49,8 @@ class TFStateNamespaceLister
   def get_aws_type_and_id(resource)
     if is_aws_resource?(resource)
       hash = resource[1]
-      return nil if FILTERED_AWS_RESOURCES.include?(hash['type'])
-      { type: hash['type'], id: hash['primary']['id'] }
-    else
-      nil
+      return nil if FILTERED_AWS_RESOURCES.include?(hash["type"])
+      {type: hash["type"], id: hash["primary"]["id"]}
     end
   end
 
@@ -60,7 +58,7 @@ class TFStateNamespaceLister
   # and a hash of data as the value.
   def is_aws_resource?(resource_hash)
     resource_hash.each do |name, hash|
-      if name =~ /^aws_/
+      if /^aws_/.match?(name)
         return true
       end
     end
