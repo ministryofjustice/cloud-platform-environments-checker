@@ -1,13 +1,13 @@
 class CloudPlatformOrphanNamespaces
   attr_reader :cluster_name, :github_lister, :tfstate_lister, :cluster_lister, :kubeconfig
 
-  ENVIRONMENTS_REPO = 'cloud-platform-environments'
+  ENVIRONMENTS_REPO = "cloud-platform-environments"
 
   def initialize(args = {})
-    @cluster_name   = args.fetch(:cluster_name)
-    @kubeconfig     = args.fetch(:kubeconfig)
+    @cluster_name = args.fetch(:cluster_name)
+    @kubeconfig = args.fetch(:kubeconfig)
     @tfstate_lister = args.fetch(:tfstate_lister) { TFStateNamespaceLister.new(args.fetch(:tfstate)) }
-    @github_lister  = args.fetch(:github_lister)  { GithubNamespaceLister.new(env_repo: ENVIRONMENTS_REPO, cluster_name: cluster_name, github_token: env('GITHUB_TOKEN')) }
+    @github_lister = args.fetch(:github_lister) { GithubNamespaceLister.new(env_repo: ENVIRONMENTS_REPO, cluster_name: cluster_name, github_token: env("GITHUB_TOKEN")) }
     @cluster_lister = args.fetch(:cluster_lister) { ClusterNamespaceLister.new(config_file: kubeconfig.fetch(:local_target), context: kubeconfig.fetch(:context)) }
   end
 
@@ -16,7 +16,7 @@ class CloudPlatformOrphanNamespaces
 
     rtn = []
     namespaces_with_tfstate = tfstate_lister.namespaces
-    orphan_namespace_names  = namespace_names_with_no_source_code
+    orphan_namespace_names = namespace_names_with_no_source_code
 
     if orphan_namespace_names.any?
       rtn << "Namespaces in cluster #{cluster_name} with no source code in the #{ENVIRONMENTS_REPO} repository:\n"
@@ -24,8 +24,8 @@ class CloudPlatformOrphanNamespaces
 
     orphan_namespace_names.each do |name|
       rtn << name
-      tfstate = namespaces_with_tfstate.find {|n| n.name == name}
-      if tfstate && tfstate.aws_resources.any?
+      tfstate = namespaces_with_tfstate.find { |n| n.name == name }
+      if tfstate&.aws_resources&.any?
         rtn << "  AWS Resources:"
         tfstate.aws_resources.each do |res|
           rtn << "    #{res[:type]}: #{res[:id]}"
