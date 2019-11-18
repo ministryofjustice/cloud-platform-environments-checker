@@ -1,5 +1,5 @@
 IMAGE := ministryofjustice/orphaned-namespace-checker
-VERSION := 2.13
+VERSION := 2.14
 
 build: .built-image
 
