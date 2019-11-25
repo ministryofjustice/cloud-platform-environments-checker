@@ -54,14 +54,9 @@ class TFStateNamespaceLister
     end
   end
 
-  # resource_hash usually has a single key, its name,
-  # and a hash of data as the value.
-  def is_aws_resource?(resource_hash)
-    resource_hash.each do |name, hash|
-      if /^aws_/.match?(name)
-        return true
-      end
-    end
-    false
+  # resource_tuple: [<name>, <data hash>]
+  def is_aws_resource?(resource_tuple)
+    name, _hash = resource_tuple
+    !!(/^aws_/.match?(name))
   end
 end
