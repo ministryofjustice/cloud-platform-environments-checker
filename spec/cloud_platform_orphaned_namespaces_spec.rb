@@ -46,7 +46,8 @@ RSpec.describe CloudPlatformOrphanNamespaces do
     it "includes namespace in the report" do
       expected = <<~EOF
         Namespaces in cluster foo with no source code in the cloud-platform-environments repository:
-         has-no-source-code
+
+        has-no-source-code
 
       EOF
       expect(checker.report).to eq(expected)
@@ -69,7 +70,8 @@ RSpec.describe CloudPlatformOrphanNamespaces do
     it "lists the AWS resources" do
       expected = <<~EOF
         Namespaces in cluster foo with no source code in the cloud-platform-environments repository:
-         has-no-source-code
+
+        has-no-source-code
           AWS Resources:
             s3-bucket: 1
             rds-instance: 2
