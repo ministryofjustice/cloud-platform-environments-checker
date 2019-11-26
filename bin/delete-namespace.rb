@@ -8,7 +8,7 @@ ENVIRONMENTS_GITHUB_REPO = 'cloud-platform-environments'
 # main.tf file for each one.
 EMPTY_MAIN_TF_URLS = {
   'cloud-platform-live-0.k8s.integration.dsd.io' => 'https://raw.githubusercontent.com/ministryofjustice/cloud-platform-environments-checker/master/resources/live0-main.tf',
-  'live-1.cloud-platform.service.justice.gov.uk' => 'https://raw.githubusercontent.com/ministryofjustice/cloud-platform-environments/master/namespace-resources/resources-main-tf'
+  'live-1.cloud-platform.service.justice.gov.uk' => 'https://raw.githubusercontent.com/ministryofjustice/cloud-platform-environments/master/namespace-resources/resources/main.tf'
 }
 
 def main(namespace, destroy)
