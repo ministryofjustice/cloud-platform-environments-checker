@@ -37,7 +37,9 @@ class TFStateNamespaceLister
 
     rtn = []
 
-    obj.fetch("modules").each do |tf_module|
+    modules = obj.fetch("modules", [])
+
+    modules.each do |tf_module|
       tf_module.fetch("resources").each do |resource|
         rtn << get_aws_type_and_id(resource)
       end
