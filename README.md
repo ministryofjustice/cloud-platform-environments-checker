@@ -2,7 +2,7 @@
 
 Ruby code to compare the namespaces which exist in the cluster to those which are defined in the [env-repo].
 
-Namespaces which exist in the cluster, but which are not defined in the repo should be deleted, along with all of their AWS resources. This project can also do that.
+Namespaces which exist in the cluster, but which are not defined in the repo should be deleted, along with all of their AWS resources.
 
 This project is executed regularly by a [concourse-job], to generate a report. To run manually, follow the steps in Installation and Usage.
 
@@ -23,20 +23,6 @@ You need to have docker installed on your computer.
 To list namespaces which exist in the cluster, but which are not defined in the [env-repo]
 
     . .env.live1; make list-orphaned-namespaces
-
-### Listing AWS resources in an orphaned namespaces
-
-Assuming an orphaned namespace called `mynamespace`
-
-    . .env.live1; NAMESPACE=mynamespace make delete-namespace
-
-### Deleting AWS resources and the namespace which owns them
-
-Assuming a namespace called `mynamespace`
-
-    . .env.live1; NAMESPACE=mynamespace DESTROY=destroy make delete-namespace
-
-NB: This will **delete all AWS resources owned by the namespace, and the namespace itself** You will not be prompted for confirmation.
 
 ### Invoking the scripts locally
 
@@ -78,16 +64,6 @@ You can copy these examples to, e.g. `.env.live1` and `.env.live0` (which will b
 This script outputs a report, detailing the namespaces which are not defined in the [env-repo], and any associated AWS resources which are defined in the terraform state.
 
 This script is executed regularly via Concourse, as defined [here][concourse-job], with the output piped into Slack.
-
-### bin/delete-namespace.rb
-
-This script expects the same environment variables as the `orphaned_namespaces` script, plus a namespace name. The script will do a `terraform init` against that namespace, using our default, empty `main.tf` file, which it fetches from the [env-repo].
-
-If invoked in 'reporting' mode (the default), it will then do a `terraform plan` which should list all the AWS resources that would be deleted if `terraform apply` is executed.
-
-To invoke the script in 'destroy' mode, **WHICH WILL DESTROY ALL AWS RESOURCES AND THEN THE NAMESPACE ITSELF, WITH NO CONFIRMATION**, add the word 'destroy' as a second parameter, after the namespace name.
-
-Currently, this script is not being executed by the concourse pipeline, so must be run manually, if desired.
 
 [env-repo]: https://github.com/ministryofjustice/cloud-platform-environments
 [concourse-job]: https://github.com/ministryofjustice/cloud-platform-concourse/blob/master/pipelines/live-1/main/check-environment.yaml
