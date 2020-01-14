@@ -4,7 +4,8 @@ FROM ruby:2.5-alpine
 
 # Install pre-requisites for building unf_ext gem
 RUN apk --update add --virtual build_deps \
-    build-base ruby-dev libc-dev linux-headers
+    build-base ruby-dev libc-dev linux-headers \
+    git
 
 WORKDIR /app
 
