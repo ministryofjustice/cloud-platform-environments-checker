@@ -1,5 +1,5 @@
 class CloudPlatformOrphanNamespaces
-  attr_reader :cluster_name, :github_lister, :tfstate_lister, :cluster_lister, :kubeconfig
+  attr_reader :cluster_name, :github_lister, :tfstate_lister, :cluster_lister, :kubeconfig, :infrastructure_namespace_lister
 
   ENVIRONMENTS_REPO = "cloud-platform-environments"
 
@@ -9,6 +9,7 @@ class CloudPlatformOrphanNamespaces
     @tfstate_lister = args.fetch(:tfstate_lister) { TFStateNamespaceLister.new(args.fetch(:tfstate)) }
     @github_lister = args.fetch(:github_lister) { GithubNamespaceLister.new(env_repo: ENVIRONMENTS_REPO, cluster_name: cluster_name, github_token: env("GITHUB_TOKEN")) }
     @cluster_lister = args.fetch(:cluster_lister) { ClusterNamespaceLister.new(config_file: kubeconfig.fetch(:local_target), context: kubeconfig.fetch(:context)) }
+    @infrastructure_namespace_lister = args.fetch(:infrastructure_namespace_lister) { InfrastructureNamespaceLister.new }
   end
 
   def report
@@ -40,7 +41,9 @@ class CloudPlatformOrphanNamespaces
   private
 
   def namespace_names_with_no_source_code
-    cluster_lister.namespace_names - namespace_names_defined_in_git_repository
+    cluster_lister.namespace_names \
+      - namespace_names_defined_in_git_repository \
+      - infrastructure_namespace_lister.namespace_names
   end
 
   def namespace_names_defined_in_git_repository

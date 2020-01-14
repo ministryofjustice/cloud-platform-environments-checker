@@ -1,6 +1,10 @@
 RSpec.describe CloudPlatformOrphanNamespaces do
   let(:cluster_namespaces) { [] }
   let(:tfstate_namespaces) { [] }
+  let(:infra_namespaces) { [] }
+
+  let(:github_lister) { double(GithubNamespaceLister, namespace_names: github_namespaces) }
+  let(:infrastructure_namespace_lister) { double(InfrastructureNamespaceLister, namespace_names: infra_namespaces) }
 
   let(:params) {
     {
@@ -9,10 +13,9 @@ RSpec.describe CloudPlatformOrphanNamespaces do
       tfstate_lister: double(namespaces: tfstate_namespaces),
       cluster_lister: double(namespace_names: cluster_namespaces),
       github_lister: github_lister,
+      infrastructure_namespace_lister: infrastructure_namespace_lister,
     }
   }
-
-  let(:github_lister) { double(GithubNamespaceLister, namespace_names: github_namespaces) }
 
   subject(:checker) { described_class.new(params) }
 
@@ -51,6 +54,14 @@ RSpec.describe CloudPlatformOrphanNamespaces do
 
       EOF
       expect(checker.report).to eq(expected)
+    end
+
+    context "but it is an infrastructure namespace" do
+      let(:infra_namespaces) { ["has-no-source-code"] }
+
+      it "produces no output" do
+        expect(checker.report).to eq("")
+      end
     end
   end
 
