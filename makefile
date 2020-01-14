@@ -44,3 +44,6 @@ list-orphaned-namespaces:
 	 -e PIPELINE_TERRAFORM_STATE_LOCK_TABLE=cloud-platform-environments-terraform-lock \
 	 -e GITHUB_TOKEN=$${GITHUB_TOKEN} \
 	 $(IMAGE):$(VERSION) sh -c 'mkdir output; /app/bin/orphaned_namespaces.rb; cat output/check.txt'
+
+shell: .built-image
+		docker run --rm -it $(IMAGE) sh
