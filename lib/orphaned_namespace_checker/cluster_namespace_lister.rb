@@ -6,6 +6,7 @@ class ClusterNamespaceLister
     default
     ingress-controllers
     kiam
+    kube-node-lease
     kube-public
     kube-system
     kuberos

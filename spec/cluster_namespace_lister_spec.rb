@@ -2,12 +2,14 @@ RSpec.describe ClusterNamespaceLister do
   let(:name_a) { double(name: "aaa") }
   let(:name_b) { double(name: "bbb") }
   let(:name_ks) { double(name: "kube-system") }
+  let(:name_knl) { double(name: "kube-node-lease") }
 
   let(:ns_a) { double(metadata: name_a) }
   let(:ns_b) { double(metadata: name_b) }
   let(:ns_ks) { double(metadata: name_ks) }
+  let(:ns_knl) { double(metadata: name_knl) }
 
-  let(:namespaces) { [ns_a, ns_b, ns_ks] }
+  let(:namespaces) { [ns_a, ns_b, ns_ks, ns_knl] }
 
   let(:params) {
     {
