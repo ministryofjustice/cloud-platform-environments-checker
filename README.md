@@ -66,5 +66,5 @@ This script outputs a report, detailing the namespaces which are not defined in 
 This script is executed regularly via Concourse, as defined [here][concourse-job], with the output piped into Slack.
 
 [env-repo]: https://github.com/ministryofjustice/cloud-platform-environments
-[concourse-job]: https://github.com/ministryofjustice/cloud-platform-concourse/blob/master/pipelines/live-1/main/check-environment.yaml
+[concourse-job]: https://github.com/ministryofjustice/cloud-platform-concourse/blob/1185313ddae4d46e2f499e1cbf84c7e2e722c082/pipelines/manager/main/reporting.yaml#L69
 
