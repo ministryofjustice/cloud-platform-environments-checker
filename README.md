@@ -32,7 +32,9 @@ If you have set up your local ruby development environment, you can invoke the r
 
 If you want to develop the code, you will also need to install ruby 2.6.2, and run `bundle install` to install gems.
 
-After changing the code, bump the version tag in the `makefile`, and then run `make build` to create the Docker image, and `make push` to tag it and push to docker hub.
+After changing the code, create a new [release] using the github web interface.
+This will trigger a github action to build the docker image and push it to
+docker hub.
 
 You will then need to update the image tag in the [concourse-job], and make any other required changes there.
 
@@ -67,4 +69,4 @@ This script is executed regularly via Concourse, as defined [here][concourse-job
 
 [env-repo]: https://github.com/ministryofjustice/cloud-platform-environments
 [concourse-job]: https://github.com/ministryofjustice/cloud-platform-concourse/blob/1185313ddae4d46e2f499e1cbf84c7e2e722c082/pipelines/manager/main/reporting.yaml#L69
-
+[release]: https://github.com/ministryofjustice/cloud-platform-environments-checker/releases
