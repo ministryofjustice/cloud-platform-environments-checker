@@ -82,7 +82,7 @@ GEM
       byebug (~> 11.0)
       pry (~> 0.10)
     public_suffix (3.0.3)
-    rack (2.0.8)
+    rack (2.2.3)
     rack-oauth2 (1.9.3)
       activesupport
       attr_required
