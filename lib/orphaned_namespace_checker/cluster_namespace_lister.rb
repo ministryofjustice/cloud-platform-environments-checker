@@ -11,6 +11,7 @@ class ClusterNamespaceLister
     kube-system
     kuberos
     opa
+    velero
   ]
 
   def initialize(args)
