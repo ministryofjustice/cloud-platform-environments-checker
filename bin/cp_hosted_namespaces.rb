@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 
-require "#{File.dirname(__FILE__)}/../lib/orphaned_namespace_checker"
-require "pry-byebug"
+require "#{File.dirname(__FILE__)}/../lib/cp_hosted_namespaces.rb"
 
 def main
   check_prerequisites
