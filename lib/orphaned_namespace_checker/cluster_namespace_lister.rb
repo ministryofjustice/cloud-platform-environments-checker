@@ -35,4 +35,22 @@ class ClusterNamespaceLister
       n.metadata.name
     } - K8S_DEFAULT_NAMESPACES
   end
+
+  def namespace_details
+    kubeclient.get_namespaces.map { |n|
+      annotations = n.metadata.to_h
+    }
+  end
+
+  def get_ingresses
+   
+    stdout, _, _ = Open3.capture3("kubectl config use-context #{context}")
+
+    stdout, stderr, status = Open3.capture3("kubectl get ingresses --all-namespaces -o json")
+      unless status.success?
+        raise stderr
+      end
+      JSON.parse(stdout).fetch("items")
+  end
+
 end
