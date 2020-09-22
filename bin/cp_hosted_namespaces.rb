@@ -32,7 +32,7 @@ def main
       namespace: namespace[:name],
       application: namespace.dig(:annotations, :'cloud-platform.justice.gov.uk/application'),
       business_unit: namespace.dig(:annotations, :'cloud-platform.justice.gov.uk/business-unit'),
-      team_name: namespace.dig(:annotations, :'cloud-platform.justice.gov.uk/owner'),
+      team_name: namespace.dig(:annotations, :'cloud-platform.justice.gov.uk/team-name'),
       team_slack_channel: namespace.dig(:annotations, :'cloud-platform.justice.gov.uk/slack-channel'),
       github_url: namespace.dig(:annotations, :'cloud-platform.justice.gov.uk/source-code'),
       deployment_type: namespace.dig(:labels, :'cloud-platform.justice.gov.uk/environment-name'),
