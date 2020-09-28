@@ -2,33 +2,18 @@
 
 require "#{File.dirname(__FILE__)}/../lib/cp_hosted_namespaces.rb"
 
+ANNOTATION_PREFIX = "cloud-platform.justice.gov.uk"
+
 def main
   check_prerequisites
 
-  namespaces = clusternamespacelister.new(
-    config_file: env('kube_config'),
-    context: env('kube_ctx'),
-  ).namespaces
+  namespaces = lister.namespaces
 
   namespace_details = {}
 
-  namespaces.each do |namespace|
-    namespace_details[namespace[:name]] = {
-      namespace: namespace[:name],
-      application: namespace.dig(:annotations, :'cloud-platform.justice.gov.uk/application'),
-      business_unit: namespace.dig(:annotations, :'cloud-platform.justice.gov.uk/business-unit'),
-      team_name: namespace.dig(:annotations, :'cloud-platform.justice.gov.uk/team-name'),
-      team_slack_channel: namespace.dig(:annotations, :'cloud-platform.justice.gov.uk/slack-channel'),
-      github_url: namespace.dig(:annotations, :'cloud-platform.justice.gov.uk/source-code'),
-      deployment_type: namespace.dig(:labels, :'cloud-platform.justice.gov.uk/environment-name'),
-      domain_names: []
-    }
-  end
+  namespaces.each { |ns| namespace_details[ns[:name]] = namespace_hash(ns) }
 
-  ingresses = ClusterNamespaceLister.new(
-    config_file: env('KUBE_CONFIG'),
-    context: env('KUBE_CTX'),
-  ).get_ingresses
+  ingresses = lister.get_ingresses
 
   ingresses
     .reject { |ingress| ClusterNamespaceLister::K8S_DEFAULT_NAMESPACES.include?(ingress.dig("metadata","namespace"))  }
@@ -49,10 +34,27 @@ def main
 end
 
 def lister
-  ClusterNamespaceLister.new(
+  @lister ||= ClusterNamespaceLister.new(
     config_file: env('KUBE_CONFIG'),
     context: env('KUBE_CTX'),
   )
+end
+
+def namespace_hash(ns)
+  {
+    namespace: ns[:name],
+    application: annotation(ns, "application"),
+    business_unit: annotation(ns, "business_unit"),
+    team_name: annotation(ns, "team_name"),
+    team_slack_channel: annotation(ns, "slack-channel"),
+    github_url: annotation(ns, "source-code"),
+    deployment_type: annotation(ns, "environment-name"),
+    domain_names: [],
+  }
+end
+
+def annotation(ns, annot)
+  ns.dig(:annotations, :"#{ANNOTATION_PREFIX}/#{annot}")
 end
 
 def hosts_from_ingress(ingress)
