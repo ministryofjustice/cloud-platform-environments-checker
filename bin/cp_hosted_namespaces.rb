@@ -17,17 +17,14 @@ def main
     context:               env('KUBE_CTX'),
   }
 
- namespaces = ClusterNamespaceLister.new(
-  config_file: env('KUBE_CONFIG'), 
-  context: env('KUBE_CTX'),
-).namespace_details
+  namespaces = ClusterNamespaceLister.new(
+    config_file: env('KUBE_CONFIG'),
+    context: env('KUBE_CTX'),
+  ).namespaces
 
- namespace_details = {}
+  namespace_details = {}
 
- namespaces
-   .reject { |namespace| ClusterNamespaceLister::K8S_DEFAULT_NAMESPACES.include?(namespace[:name]) }
-   .each do |namespace| 
-
+  namespaces.each do |namespace|
     namespace_details[namespace[:name]] = {
       namespace: namespace[:name],
       application: namespace.dig(:annotations, :'cloud-platform.justice.gov.uk/application'),
@@ -38,23 +35,21 @@ def main
       deployment_type: namespace.dig(:labels, :'cloud-platform.justice.gov.uk/environment-name'),
       domain_names: []
     }
-
   end
-  
-  
+
   ingresses = ClusterNamespaceLister.new(
-    config_file: env('KUBE_CONFIG'), 
+    config_file: env('KUBE_CONFIG'),
     context: env('KUBE_CTX'),
   ).get_ingresses
 
 
 
-ingresses
-  .reject { |ingress| ClusterNamespaceLister::K8S_DEFAULT_NAMESPACES.include?(ingress.dig("metadata","namespace"))  }
-  .map { |ingress|
-  namespace = ingress.dig("metadata","namespace")
-  namespace_details[namespace][:domain_names] = hosts_from_ingress(ingress)
-  }
+  ingresses
+    .reject { |ingress| ClusterNamespaceLister::K8S_DEFAULT_NAMESPACES.include?(ingress.dig("metadata","namespace"))  }
+    .map { |ingress|
+      namespace = ingress.dig("metadata","namespace")
+      namespace_details[namespace][:domain_names] = hosts_from_ingress(ingress)
+    }
 
   namespace_details = namespace_details.map { |key,value| value }
 
@@ -64,7 +59,7 @@ ingresses
     namespace_details: namespace_details,
   }
 
-puts rtn.to_json
+  puts rtn.to_json
 
 end
 

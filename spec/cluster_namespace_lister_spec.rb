@@ -32,4 +32,8 @@ RSpec.describe ClusterNamespaceLister do
   it "does not list system namespaces" do
     expect(lister.namespace_names).to eq(["aaa", "bbb"])
   end
+
+  it "does not include system namespaces" do
+    expect(lister.namespaces).to_not include(ns_ks)
+  end
 end
