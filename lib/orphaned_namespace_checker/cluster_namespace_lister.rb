@@ -40,13 +40,25 @@ class ClusterNamespaceLister
       .reject { |n| K8S_DEFAULT_NAMESPACES.include?(n.metadata.name) }
   end
 
-  def get_ingresses
-    stdout, _, _ = Open3.capture3("kubectl config use-context #{context}")
+  def ingresses
+    kubectl_get_ingresses
+      .reject { |i| K8S_DEFAULT_NAMESPACES.include?(i.dig("metadata", "namespace")) }
+  end
 
-    stdout, stderr, status = Open3.capture3("kubectl get ingresses --all-namespaces -o json")
-      unless status.success?
-        raise stderr
-      end
-      JSON.parse(stdout).fetch("items")
+  private
+
+  def kubectl_get_ingresses
+    cmd = [
+      "kubectl config use-context #{context}",
+      "kubectl get ingresses --all-namespaces -o json"
+    ].join("; ")
+
+    stdout, stderr, status = Open3.capture3(cmd)
+
+    unless status.success?
+      raise stderr
+    end
+
+    JSON.parse(stdout).fetch("items")
   end
 end

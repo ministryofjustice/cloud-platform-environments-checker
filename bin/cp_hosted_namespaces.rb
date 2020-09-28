@@ -13,10 +13,7 @@ def main
 
   namespaces.each { |ns| namespace_details[ns[:name]] = namespace_hash(ns) }
 
-  ingresses = lister.get_ingresses
-
-  ingresses
-    .reject { |ingress| ClusterNamespaceLister::K8S_DEFAULT_NAMESPACES.include?(ingress.dig("metadata","namespace"))  }
+  lister.ingresses
     .map { |ingress|
       namespace = ingress.dig("metadata","namespace")
       namespace_details[namespace][:domain_names] = hosts_from_ingress(ingress)
