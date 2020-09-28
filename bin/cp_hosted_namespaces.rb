@@ -5,18 +5,6 @@ require "#{File.dirname(__FILE__)}/../lib/cp_hosted_namespaces.rb"
 def main
   check_prerequisites
 
-  # How to fetch the kubeconfig file, so we can talk to the cluster
-  kubeconfig = {
-    s3client: Aws::S3::Client.new(
-      region: env('KUBECONFIG_AWS_REGION'),
-      credentials: Aws::Credentials.new(env('KUBECONFIG_AWS_ACCESS_KEY_ID'), env('KUBECONFIG_AWS_SECRET_ACCESS_KEY'))
-    ),
-    bucket:                env('KUBECONFIG_S3_BUCKET'),
-    key:                   env('KUBECONFIG_S3_KEY'),
-    local_target:          env('KUBE_CONFIG'),
-    context:               env('KUBE_CTX'),
-  }
-
   namespaces = ClusterNamespaceLister.new(
     config_file: env('KUBE_CONFIG'),
     context: env('KUBE_CTX'),
