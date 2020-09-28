@@ -5,9 +5,9 @@ require "#{File.dirname(__FILE__)}/../lib/cp_hosted_namespaces.rb"
 def main
   check_prerequisites
 
-  namespaces = ClusterNamespaceLister.new(
-    config_file: env('KUBE_CONFIG'),
-    context: env('KUBE_CTX'),
+  namespaces = clusternamespacelister.new(
+    config_file: env('kube_config'),
+    context: env('kube_ctx'),
   ).namespaces
 
   namespace_details = {}
@@ -30,8 +30,6 @@ def main
     context: env('KUBE_CTX'),
   ).get_ingresses
 
-
-
   ingresses
     .reject { |ingress| ClusterNamespaceLister::K8S_DEFAULT_NAMESPACES.include?(ingress.dig("metadata","namespace"))  }
     .map { |ingress|
@@ -48,7 +46,13 @@ def main
   }
 
   puts rtn.to_json
+end
 
+def lister
+  ClusterNamespaceLister.new(
+    config_file: env('KUBE_CONFIG'),
+    context: env('KUBE_CTX'),
+  )
 end
 
 def hosts_from_ingress(ingress)
