@@ -7,9 +7,9 @@ ANNOTATION_PREFIX = "cloud-platform.justice.gov.uk"
 def main
   check_prerequisites
 
-  hash = lister
-    .namespaces
-    .inject({}) { |acc, ns| acc[ns[:name]] = namespace_hash(ns); acc }
+  hash = lister.namespaces.inject({}) { |acc, ns|
+    acc[ns.metadata.name] = namespace_hash(ns); acc
+  }
 
   lister.ingresses.map { |ingress| add_ingress(hash, ingress) }
 
@@ -21,11 +21,6 @@ def main
   puts rtn.to_json
 end
 
-def add_ingress(hash, ingress)
-  namespace = ingress.dig("metadata","namespace")
-  hash[namespace][:domain_names] = hosts_from_ingress(ingress)
-end
-
 def lister
   @lister ||= ClusterNamespaceLister.new(
     config_file: env('KUBE_CONFIG'),
@@ -35,19 +30,24 @@ end
 
 def namespace_hash(ns)
   {
-    namespace: ns[:name],
+    namespace: ns.metadata.name,
     application: annotation(ns, "application"),
-    business_unit: annotation(ns, "business_unit"),
-    team_name: annotation(ns, "team_name"),
+    business_unit: annotation(ns, "business-unit"),
+    team_name: annotation(ns, "team-name").to_s,
     team_slack_channel: annotation(ns, "slack-channel"),
     github_url: annotation(ns, "source-code"),
-    deployment_type: annotation(ns, "environment-name"),
+    deployment_type: ns.dig("metadata", "labels", "#{ANNOTATION_PREFIX}/environment-name"),
     domain_names: [],
   }
 end
 
 def annotation(ns, annot)
-  ns.dig(:annotations, :"#{ANNOTATION_PREFIX}/#{annot}")
+  ns.metadata.annotations["#{ANNOTATION_PREFIX}/#{annot}"]
+end
+
+def add_ingress(hash, ingress)
+  namespace = ingress.dig("metadata","namespace")
+  hash[namespace][:domain_names] = hosts_from_ingress(ingress)
 end
 
 def hosts_from_ingress(ingress)
