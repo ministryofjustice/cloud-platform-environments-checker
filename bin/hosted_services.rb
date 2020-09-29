@@ -13,14 +13,9 @@ def main
 
   namespaces.each { |ns| namespace_details[ns[:name]] = namespace_hash(ns) }
 
-  lister.ingresses
-    .map { |ingress|
-      namespace = ingress.dig("metadata","namespace")
-      namespace_details[namespace][:domain_names] = hosts_from_ingress(ingress)
-    }
+  lister.ingresses.map { |ingress| add_ingress(namespace_details, ingress) }
 
   namespace_details = namespace_details.map { |key,value| value }
-
 
   rtn = {
     updated_at: Time.now,
@@ -28,6 +23,12 @@ def main
   }
 
   puts rtn.to_json
+end
+
+
+def add_ingress(hash, ingress)
+  namespace = ingress.dig("metadata","namespace")
+  hash[namespace][:domain_names] = hosts_from_ingress(ingress)
 end
 
 def lister
