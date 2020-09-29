@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-require "#{File.dirname(__FILE__)}/../lib/cp_hosted_namespaces.rb"
+require "#{File.dirname(__FILE__)}/../lib/orphaned_namespace_checker"
 
 ANNOTATION_PREFIX = "cloud-platform.justice.gov.uk"
 
