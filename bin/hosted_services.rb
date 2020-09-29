@@ -7,24 +7,19 @@ ANNOTATION_PREFIX = "cloud-platform.justice.gov.uk"
 def main
   check_prerequisites
 
-  namespaces = lister.namespaces
+  hash = lister
+    .namespaces
+    .inject({}) { |acc, ns| acc[ns[:name]] = namespace_hash(ns); acc }
 
-  namespace_details = {}
-
-  namespaces.each { |ns| namespace_details[ns[:name]] = namespace_hash(ns) }
-
-  lister.ingresses.map { |ingress| add_ingress(namespace_details, ingress) }
-
-  namespace_details = namespace_details.map { |key,value| value }
+  lister.ingresses.map { |ingress| add_ingress(hash, ingress) }
 
   rtn = {
     updated_at: Time.now,
-    namespace_details: namespace_details,
+    namespace_details: hash.values,
   }
 
   puts rtn.to_json
 end
-
 
 def add_ingress(hash, ingress)
   namespace = ingress.dig("metadata","namespace")
