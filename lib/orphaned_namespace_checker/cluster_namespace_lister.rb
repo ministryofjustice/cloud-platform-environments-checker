@@ -49,7 +49,7 @@ class ClusterNamespaceLister
 
   def kubectl_get_ingresses
     cmd = [
-      "kubectl config use-context #{context}",
+      "kubectl config use-context #{context} > /dev/null", # So we don't get "Switched to context..." in the output
       "kubectl get ingresses --all-namespaces -o json"
     ].join("; ")
 
