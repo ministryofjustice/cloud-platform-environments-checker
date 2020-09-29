@@ -23,5 +23,4 @@ class InfrastructureNamespaceLister
 
     rtn
   end
-
 end

@@ -7,8 +7,8 @@ ANNOTATION_PREFIX = "cloud-platform.justice.gov.uk"
 def main
   check_prerequisites
 
-  hash = lister.namespaces.inject({}) { |acc, ns|
-    acc[ns.metadata.name] = namespace_hash(ns); acc
+  hash = lister.namespaces.each_with_object({}) { |ns, acc|
+    acc[ns.metadata.name] = namespace_hash(ns)
   }
 
   lister.ingresses.map { |ingress| add_ingress(hash, ingress) }
@@ -23,8 +23,8 @@ end
 
 def lister
   @lister ||= ClusterNamespaceLister.new(
-    config_file: env('KUBE_CONFIG'),
-    context: env('KUBE_CTX'),
+    config_file: env("KUBE_CONFIG"),
+    context: env("KUBE_CTX"),
   )
 end
 
@@ -46,16 +46,16 @@ def annotation(ns, annot)
 end
 
 def add_ingress(hash, ingress)
-  namespace = ingress.dig("metadata","namespace")
+  namespace = ingress.dig("metadata", "namespace")
   hash[namespace][:domain_names] = hosts_from_ingress(ingress)
 end
 
 def hosts_from_ingress(ingress)
-  ingress.dig("spec","rules").map { |h| h["host"] }
+  ingress.dig("spec", "rules").map { |h| h["host"] }
 end
 
 def check_prerequisites
-  %w(
+  %w[
     KUBECONFIG_AWS_ACCESS_KEY_ID
     KUBECONFIG_AWS_REGION
     KUBECONFIG_AWS_SECRET_ACCESS_KEY
@@ -64,7 +64,7 @@ def check_prerequisites
     KUBERNETES_CLUSTER
     KUBE_CONFIG
     KUBE_CTX
-  ).each do |var|
+  ].each do |var|
     env(var)
   end
 end

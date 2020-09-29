@@ -16,5 +16,4 @@ class GithubNamespaceLister
     content = open(env_repo_namespace_path, "Authorization" => "token #{github_token}").read
     JSON.parse(content).map { |hash| hash.fetch("name") }
   end
-  
 end

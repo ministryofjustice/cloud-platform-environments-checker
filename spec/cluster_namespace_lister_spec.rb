@@ -18,7 +18,6 @@ RSpec.describe ClusterNamespaceLister do
     }
   }
 
-
   let(:kubeclient) { double(get_namespaces: namespaces) }
   let(:context) { double(api_endpoint: nil, ssl_options: nil, auth_options: nil) }
   let(:kubeconfig) { double(context: context) }
@@ -39,35 +38,41 @@ RSpec.describe ClusterNamespaceLister do
   end
 
   context "ingresses" do
-    let(:system_ingress) { {
-      "metadata" => {
-        "namespace" => "kube-system"
-      },
-      "spec" => {
-        "rules" => [
-          "host" => "some.host.name"
-        ]
+    let(:system_ingress) {
+      {
+        "metadata" => {
+          "namespace" => "kube-system",
+        },
+        "spec" => {
+          "rules" => [
+            "host" => "some.host.name",
+          ],
+        },
       }
-    } }
+    }
 
-    let(:non_system_ingress) { {
-      "metadata" => {
-        "namespace" => "mynamespace"
-      },
-      "spec" => {
-        "rules" => [
-          "host" => "some.other.host"
-        ]
+    let(:non_system_ingress) {
+      {
+        "metadata" => {
+          "namespace" => "mynamespace",
+        },
+        "spec" => {
+          "rules" => [
+            "host" => "some.other.host",
+          ],
+        },
       }
-    } }
+    }
 
-    let(:ingresses) { [
-      system_ingress,
-      non_system_ingress
-    ] }
+    let(:ingresses) {
+      [
+        system_ingress,
+        non_system_ingress,
+      ]
+    }
 
     let(:json) {
-      { "items" => ingresses }.to_json
+      {"items" => ingresses}.to_json
     }
 
     let(:success) { double(Object, success?: true) }
@@ -79,7 +84,5 @@ RSpec.describe ClusterNamespaceLister do
     it "lists ingresses in non-system namespaces" do
       expect(lister.ingresses).to eq([non_system_ingress])
     end
-
   end
-
 end

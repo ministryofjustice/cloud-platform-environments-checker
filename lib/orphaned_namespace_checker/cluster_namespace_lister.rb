@@ -50,7 +50,7 @@ class ClusterNamespaceLister
   def kubectl_get_ingresses
     cmd = [
       "kubectl config use-context #{context} > /dev/null", # So we don't get "Switched to context..." in the output
-      "kubectl get ingresses --all-namespaces -o json"
+      "kubectl get ingresses --all-namespaces -o json",
     ].join("; ")
 
     stdout, stderr, status = Open3.capture3(cmd)

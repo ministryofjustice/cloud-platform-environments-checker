@@ -59,6 +59,6 @@ class TFStateNamespaceLister
   # resource_tuple: [<name>, <data hash>]
   def is_aws_resource?(resource_tuple)
     name, _hash = resource_tuple
-    !!(/^aws_/.match?(name))
+    !!/^aws_/.match?(name)
   end
 end
