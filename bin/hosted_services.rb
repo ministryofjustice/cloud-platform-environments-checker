@@ -42,7 +42,9 @@ def namespace_hash(ns)
 end
 
 def annotation(ns, annot)
-  ns.metadata.annotations["#{ANNOTATION_PREFIX}/#{annot}"]
+    if defined?(ns.metadata.annotations) 
+      ns.metadata.annotations["#{ANNOTATION_PREFIX}/#{annot}"]
+    end
 end
 
 def add_ingress(hash, ingress)
