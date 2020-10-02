@@ -8,30 +8,30 @@ def main
   # How to fetch the kubeconfig file, so we can talk to the cluster
   kubeconfig = {
     s3client: Aws::S3::Client.new(
-      region: env('KUBECONFIG_AWS_REGION'),
-      credentials: Aws::Credentials.new(env('KUBECONFIG_AWS_ACCESS_KEY_ID'), env('KUBECONFIG_AWS_SECRET_ACCESS_KEY'))
+      region: env("KUBECONFIG_AWS_REGION"),
+      credentials: Aws::Credentials.new(env("KUBECONFIG_AWS_ACCESS_KEY_ID"), env("KUBECONFIG_AWS_SECRET_ACCESS_KEY"))
     ),
-    bucket:                env('KUBECONFIG_S3_BUCKET'),
-    key:                   env('KUBECONFIG_S3_KEY'),
-    local_target:          env('KUBE_CONFIG'),
-    context:               env('KUBE_CTX'),
+    bucket: env("KUBECONFIG_S3_BUCKET"),
+    key: env("KUBECONFIG_S3_KEY"),
+    local_target: env("KUBE_CONFIG"),
+    context: env("KUBE_CTX"),
   }
 
   # How to retrieve the terraform state, so we can query it to look
   # for AWS resource definitions
   tfstate = {
     s3client: Aws::S3::Client.new(
-      region: env('TFSTATE_AWS_REGION'),
-      credentials: Aws::Credentials.new(env('TFSTATE_AWS_ACCESS_KEY_ID'), env('TFSTATE_AWS_SECRET_ACCESS_KEY')),
+      region: env("TFSTATE_AWS_REGION"),
+      credentials: Aws::Credentials.new(env("TFSTATE_AWS_ACCESS_KEY_ID"), env("TFSTATE_AWS_SECRET_ACCESS_KEY")),
     ),
-    bucket: env('TFSTATE_BUCKET'),
-    bucket_prefix: env('TFSTATE_BUCKET_PREFIX'),
+    bucket: env("TFSTATE_BUCKET"),
+    bucket_prefix: env("TFSTATE_BUCKET_PREFIX"),
   }
 
   result = CloudPlatformOrphanNamespaces.new(
-    cluster_name: env('KUBERNETES_CLUSTER'),
+    cluster_name: env("KUBERNETES_CLUSTER"),
     kubeconfig: kubeconfig,
-    tfstate:    tfstate,
+    tfstate: tfstate,
   ).report
 
   # Concourse will create the 'output' directory during the
@@ -40,11 +40,11 @@ def main
   # be able to write to a file in that directory.
   # Concourse seems to have a baked-in assumption that it, and
   # any containers it runs, will run as root.
-  File.open('./output/check.txt', 'w') { |f| f.puts(result) }
+  File.open("./output/check.txt", "w") { |f| f.puts(result) }
 end
 
 def check_prerequisites
-  %w(
+  %w[
     KUBECONFIG_AWS_ACCESS_KEY_ID
     KUBECONFIG_AWS_REGION
     KUBECONFIG_AWS_SECRET_ACCESS_KEY
@@ -58,7 +58,7 @@ def check_prerequisites
     TFSTATE_AWS_REGION
     TFSTATE_AWS_SECRET_ACCESS_KEY
     TFSTATE_BUCKET_PREFIX
-  ).each do |var|
+  ].each do |var|
     env(var)
   end
 end

@@ -29,7 +29,60 @@ RSpec.describe ClusterNamespaceLister do
     allow(Kubeclient::Client).to receive(:new).and_return(kubeclient)
   end
 
-  it "does not list system namespaces" do
+  it "lists non-system namespace names" do
     expect(lister.namespace_names).to eq(["aaa", "bbb"])
+  end
+
+  it "does not include system namespaces" do
+    expect(lister.namespaces).to_not include(ns_ks)
+  end
+
+  context "ingresses" do
+    let(:system_ingress) {
+      {
+        "metadata" => {
+          "namespace" => "kube-system",
+        },
+        "spec" => {
+          "rules" => [
+            "host" => "some.host.name",
+          ],
+        },
+      }
+    }
+
+    let(:non_system_ingress) {
+      {
+        "metadata" => {
+          "namespace" => "mynamespace",
+        },
+        "spec" => {
+          "rules" => [
+            "host" => "some.other.host",
+          ],
+        },
+      }
+    }
+
+    let(:ingresses) {
+      [
+        system_ingress,
+        non_system_ingress,
+      ]
+    }
+
+    let(:json) {
+      {"items" => ingresses}.to_json
+    }
+
+    let(:success) { double(Object, success?: true) }
+
+    before do
+      allow(Open3).to receive(:capture3).and_return([json, "", success])
+    end
+
+    it "lists ingresses in non-system namespaces" do
+      expect(lister.ingresses).to eq([non_system_ingress])
+    end
   end
 end
