@@ -2,10 +2,20 @@ FROM hashicorp/terraform:0.11.14 AS terraform
 
 FROM ruby:2.5-alpine
 
+ENV \
+  KUBECTL_VERSION=1.16.3
+
 # Install pre-requisites for building unf_ext gem
 RUN apk --update add --virtual build_deps \
     build-base ruby-dev libc-dev linux-headers \
-    git
+    git \
+    curl
+
+# Install kubectl
+RUN curl -sLo /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl
+
+# Ensure everything is executable
+RUN chmod +x /usr/local/bin/*
 
 WORKDIR /app
 

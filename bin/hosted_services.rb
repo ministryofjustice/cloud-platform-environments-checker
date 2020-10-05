@@ -7,6 +7,8 @@ ANNOTATION_PREFIX = "cloud-platform.justice.gov.uk"
 def main
   check_prerequisites
 
+  get_kubeconfig
+
   hash = lister.namespaces.each_with_object({}) { |ns, acc|
     acc[ns.metadata.name] = namespace_hash(ns)
   }
@@ -21,9 +23,26 @@ def main
   puts rtn.to_json
 end
 
+def get_kubeconfig
+  # How to fetch the kubeconfig file, so we can talk to the cluster
+  kubeconfig = {
+    s3client: Aws::S3::Client.new(
+      region: env("KUBECONFIG_AWS_REGION"),
+      credentials: Aws::Credentials.new(env("KUBECONFIG_AWS_ACCESS_KEY_ID"), env("KUBECONFIG_AWS_SECRET_ACCESS_KEY"))
+    ),
+    bucket: env("KUBECONFIG_S3_BUCKET"),
+    key: env("KUBECONFIG_S3_KEY"),
+    local_target: env("KUBECONFIG"),
+    context: env("KUBE_CTX"),
+  }
+  
+  Kubeconfig.new(kubeconfig).fetch_and_store
+
+end
+
 def lister
   @lister ||= ClusterNamespaceLister.new(
-    config_file: env("KUBE_CONFIG"),
+    config_file: env("KUBECONFIG"),
     context: env("KUBE_CTX"),
   )
 end
@@ -58,8 +77,15 @@ end
 
 def check_prerequisites
   %w[
-    KUBE_CONFIG
+    KUBECONFIG_AWS_ACCESS_KEY_ID
+    KUBECONFIG_AWS_SECRET_ACCESS_KEY
+    KUBECONFIG_AWS_REGION
+    KUBECONFIG_S3_BUCKET
+    KUBECONFIG_S3_KEY
+    KUBECONFIG
     KUBE_CTX
+    HOODAW_HOST
+    HOODAW_API_KEY
   ].each do |var|
     env(var)
   end

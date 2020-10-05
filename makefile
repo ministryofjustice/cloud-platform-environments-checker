@@ -29,5 +29,19 @@ list-orphaned-namespaces:
 	 -e GITHUB_TOKEN=$${GITHUB_TOKEN} \
 	 $(IMAGE):$(VERSION) sh -c 'mkdir output; /app/bin/orphaned_namespaces.rb; cat output/check.txt'
 
+hosted-services:
+	docker run \
+	 -e KUBERNETES_CLUSTER=$${KUBERNETES_CLUSTER} \
+	 -e KUBECONFIG=$${KUBE_CONFIG} \
+	 -e KUBECONFIG_S3_BUCKET=$${KUBECONFIG_S3_BUCKET} \
+	 -e KUBECONFIG_S3_KEY=$${KUBECONFIG_S3_KEY} \
+	 -e KUBE_CTX=$${KUBE_CTX} \
+	 -e KUBECONFIG_AWS_REGION=$${KUBECONFIG_AWS_REGION} \
+	 -e KUBECONFIG_AWS_ACCESS_KEY_ID=$${KUBECONFIG_AWS_ACCESS_KEY_ID} \
+	 -e KUBECONFIG_AWS_SECRET_ACCESS_KEY=$${KUBECONFIG_AWS_SECRET_ACCESS_KEY} \
+	 -e HOODAW_API_KEY=$${HOODAW_API_KEY} \
+ 	 -e HOODAW_HOST=$${HOODAW_HOST}\
+	 $(IMAGE):$(VERSION) sh -c 'mkdir output; /app/bin/hosted_services.rb > output/check.txt; cat output/check.txt'
+
 shell: .built-image
 		docker run --rm -it $(IMAGE) sh
