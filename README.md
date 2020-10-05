@@ -16,8 +16,7 @@ You need to have docker installed on your computer.
 
 * Check out a copy of this repository
 * Copy `example.env.live1` to `.env.live1`
-* Copy `example.env.live0` to `.env.live0`
-* Replace the placeholders in the `.env.*` files with valid AWS credentials and GITHUB_TOKEN (with `public_repo` scope)
+* Replace the placeholders in the `.env.live1` files with valid AWS credentials, GITHUB_TOKEN (with `public_repo` scope, for orphaned-resources) and HOODAW_API_KEY(for listing hosted services)
 * `make pull`
 
 ## Usage
@@ -66,9 +65,9 @@ These are stored in different AWS accounts and regions, depending on the cluster
 
 ### Environment variables
 
-These scripts require many environment variables to be set. See `example.env.live-0` and `example.env.live-1` for a list.
+These scripts require many environment variables to be set. See `example.env.live-1` for a list.
 
-You can copy these examples to, e.g. `.env.live1` and `.env.live0` (which will be `git ignore`d) and supply valid AWS credentials, GITHUB_TOKEN and HOODAW_API_KEY, in order to run these scripts locally (either directly, or via the docker image).
+You can copy these examples to, e.g. `.env.live1` (which will be `git ignore`d) and supply valid AWS credentials, GITHUB_TOKEN(for orphaned_namespaces) and HOODAW_API_KEY(for hosted_services), in order to run these scripts locally (either directly, or via the docker image).
 
 ### bin/orphaned_namespaces.rb
 

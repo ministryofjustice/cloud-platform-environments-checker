@@ -67,18 +67,6 @@ RSpec.describe TFStateNamespaceLister do
       ]
     }
 
-    context "in live0" do
-      let(:bucket_prefix) { "cloud-platform-live-0.k8s.integration.dsd.io/" }
-
-      let(:key1) { "cloud-platform-live-0.k8s.integration.dsd.io/weekly-app-deploy-oa/terraform.tfstate" }
-      let(:key2) { "cloud-platform-live-0.k8s.integration.dsd.io/whereabouts-dev/terraform.tfstate" }
-      let(:key3) { "cloud-platform-live-0.k8s.integration.dsd.io/vv-myapp-dev/terraform.tfstate" }
-
-      it "extracts namespace names" do
-        expect(lister.namespaces).to eq(namespaces)
-      end
-    end
-
     context "in live1" do
       let(:bucket_prefix) { "" }
 
