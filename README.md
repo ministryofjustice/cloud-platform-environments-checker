@@ -66,7 +66,7 @@ These are stored in different AWS accounts and regions, depending on the cluster
 
 ### Environment variables
 
-These scripts require many environment variables to be set. See `example.env.live-0` and `example.env.live-1` for a list.
+These scripts require many environment variables to be set. See `example.env.live-1` for a list.
 
 You can copy these examples to, e.g. `.env.live1` and `.env.live0` (which will be `git ignore`d) and supply valid AWS credentials, GITHUB_TOKEN and HOODAW_API_KEY, in order to run these scripts locally (either directly, or via the docker image).
 
