@@ -1,13 +1,12 @@
 # Environments Checker
-Ruby code to list a) 'orphaned' namespaces and b) 'hosted services' that are hosted by Cloud Platform.
+Ruby code to 
+1. List 'orphaned' namespaces
 
-a) List 'orphaned' namespaces
-Ruby code to compare the namespaces which exist in the cluster to those which are defined in the [env-repo].
+   Script to compare the namespaces which exist in the cluster to those which are defined in the [env-repo]. Namespaces which exist in the cluster, but which are  not defined in the repo should be deleted, along with all of their AWS resources.
 
-Namespaces which exist in the cluster, but which are not defined in the repo should be deleted, along with all of their AWS resources.
+1. List 'hosted services' 
 
-b) List 'hosted services' 
-Ruby code to list the namespaces and its ingresses of services that are hosted by Cloud Platform. 
+   Script to list the namespaces and its ingresses of services that are hosted by Cloud Platform. 
 
 Both the projects are executed regularly by a [concourse-job], to generate a report. To run manually, follow the steps in Installation and Usage.
 
@@ -69,7 +68,7 @@ These are stored in different AWS accounts and regions, depending on the cluster
 
 These scripts require many environment variables to be set. See `example.env.live-0` and `example.env.live-1` for a list.
 
-You can copy these examples to, e.g. `.env.live1` and `.env.live0` (which will be `git ignore`d) and supply valid AWS credentials and GITHUB_TOKEN, in order to run these scripts locally (either directly, or via the docker image).
+You can copy these examples to, e.g. `.env.live1` and `.env.live0` (which will be `git ignore`d) and supply valid AWS credentials, GITHUB_TOKEN and HOODAW_API_KEY, in order to run these scripts locally (either directly, or via the docker image).
 
 ### bin/orphaned_namespaces.rb
 
