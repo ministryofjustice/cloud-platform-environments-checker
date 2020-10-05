@@ -1,10 +1,15 @@
 # Environments Checker
+Ruby code to list a) 'orphaned' namespaces and b) 'hosted services' that are hosted by Cloud Platform.
 
+a) List 'orphaned' namespaces
 Ruby code to compare the namespaces which exist in the cluster to those which are defined in the [env-repo].
 
 Namespaces which exist in the cluster, but which are not defined in the repo should be deleted, along with all of their AWS resources.
 
-This project is executed regularly by a [concourse-job], to generate a report. To run manually, follow the steps in Installation and Usage.
+b) List 'hosted services' 
+Ruby code to list the namespaces and its ingresses of services that are hosted by Cloud Platform. 
+
+Both the projects are executed regularly by a [concourse-job], to generate a report. To run manually, follow the steps in Installation and Usage.
 
 ## Installation
 
@@ -24,6 +29,12 @@ To list namespaces which exist in the cluster, but which are not defined in the 
 
     . .env.live1; make list-orphaned-namespaces
 
+### Listing 'hosted services' of the cluster
+
+To list namespaces and ingresses of services which exist in the cluster
+
+    . .env.live1; make hosted-services
+
 ### Invoking the scripts locally
 
 If you have set up your local ruby development environment, you can invoke the ruby scripts locally. See the makefile for examples of how to do this.
@@ -33,8 +44,7 @@ If you have set up your local ruby development environment, you can invoke the r
 If you want to develop the code, you will also need to install ruby 2.6.2, and run `bundle install` to install gems.
 
 After changing the code, create a new [release] using the github web interface.
-This will trigger a github action to build the docker image and push it to
-docker hub.
+This will trigger a github action to build the docker image with tag `ministryofjustice/orphaned-namespace-checker:<release-tag>`and push it to docker hub.
 
 You will then need to update the image tag in the [concourse-job], and make any other required changes there.
 
@@ -67,6 +77,18 @@ This script outputs a report, detailing the namespaces which are not defined in 
 
 This script is executed regularly via Concourse, as defined [here][concourse-job], with the output piped into Slack.
 
+### bin/hosted_services.rb
+
+This script outputs a report with the list of namespaces, namespace annotations and corresponding ingresses which exists in the cluster.
+
+This script is executed regularly via Concourse, as defined [here][concourse-job-orphaned-namespace], with the output piped into Slack.
+
+### bin/post-data-to-hoodaw.sh
+This script runs and pushes the output of `bin/hosted_services.rb` to the [HOODAW] page. This is executed regulary via Concourse, as defined [here][concourse-job-hosted-services]
+
 [env-repo]: https://github.com/ministryofjustice/cloud-platform-environments
-[concourse-job]: https://github.com/ministryofjustice/cloud-platform-concourse/blob/1185313ddae4d46e2f499e1cbf84c7e2e722c082/pipelines/manager/main/reporting.yaml#L69
+[HOODAW]: https://how-out-of-date-are-we.apps.live-1.cloud-platform.service.justice.gov.uk/hosted_services
+[concourse-job]: https://github.com/ministryofjustice/cloud-platform-concourse/blob/main/pipelines/manager/main/reporting.yaml
+[concourse-job-orphaned-namespace]: https://github.com/ministryofjustice/cloud-platform-concourse/blob/main/pipelines/manager/main/reporting.yaml#L69
+[concourse-job-hosted-services]: https://github.com/ministryofjustice/cloud-platform-concourse/blob/main/pipelines/manager/main/reporting.yaml#L384
 [release]: https://github.com/ministryofjustice/cloud-platform-environments-checker/releases
