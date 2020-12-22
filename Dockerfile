@@ -27,3 +27,10 @@ COPY lib ./lib
 COPY bin ./bin
 
 COPY --from=terraform bin/terraform /app/bin/terraform
+
+RUN addgroup -g 1000 -S appgroup \
+  && adduser -u 1000 -S appuser -G appgroup
+
+RUN chown -R appuser:appgroup /app
+
+USER 1000
