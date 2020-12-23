@@ -1,4 +1,7 @@
 # Environments Checker
+
+[![Releases](https://img.shields.io/github/release/ministryofjustice/cloud-platform-environments-checker/all.svg?style=flat-square)](https://github.com/ministryofjustice/cloud-platform-environments-checker/releases)
+
 Ruby code to 
 1. List 'orphaned' namespaces
 
