@@ -31,6 +31,7 @@ COPY --from=terraform bin/terraform /app/bin/terraform
 RUN addgroup -g 1000 -S appgroup \
   && adduser -u 1000 -S appuser -G appgroup
 
-RUN chown -R appuser:appgroup /app
+RUN mkdir /output # Used for passing info between concourse pipeline steps
+RUN chown -R appuser:appgroup /app /output
 
 USER 1000
