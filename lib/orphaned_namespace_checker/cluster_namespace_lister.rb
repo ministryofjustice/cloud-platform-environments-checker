@@ -12,6 +12,7 @@ class ClusterNamespaceLister
     kuberos
     opa
     velero
+    logging
   ]
 
   def initialize(args)
