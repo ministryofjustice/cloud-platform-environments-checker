@@ -12,6 +12,7 @@ class ClusterNamespaceLister
     kuberos
     kuberhealthy
     opa
+    overprovision
     velero
     logging
   ]
