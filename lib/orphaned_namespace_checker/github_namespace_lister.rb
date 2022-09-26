@@ -13,7 +13,7 @@ class GithubNamespaceLister
 
   def namespace_names
     env_repo_namespace_path = "https://api.github.com/repos/ministryofjustice/#{env_repo}/contents/namespaces/#{cluster_name}"
-    content = open(env_repo_namespace_path, "Authorization" => "token #{github_token}").read
+    content = URI.open(env_repo_namespace_path, "Authorization" => "token #{github_token}").read
     JSON.parse(content).map { |hash| hash.fetch("name") }
   end
 end
