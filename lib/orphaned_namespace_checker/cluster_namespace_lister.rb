@@ -15,6 +15,9 @@ class ClusterNamespaceLister
     overprovision
     velero
     logging
+    calico-apiserver
+    calico-system
+    tigera-operator
   ]
 
   def initialize(args)
