@@ -8,6 +8,7 @@ gem "openid_connect"
 gem "kubeclient"
 gem "aws-sdk-s3", "~> 1"
 gem "tzinfo-data"
+gem "nokogiri"
 
 group :development do
   gem "pry-byebug"
