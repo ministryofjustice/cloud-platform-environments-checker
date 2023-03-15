@@ -84,6 +84,7 @@ GEM
       mime-types-data (~> 3.2015)
     mime-types-data (3.2023.0218.1)
     mini_mime (1.1.2)
+    mini_portile2 (2.8.1)
     minitest (5.18.0)
     multi_json (1.15.0)
     net-imap (0.3.4)
@@ -96,6 +97,9 @@ GEM
     net-smtp (0.3.3)
       net-protocol
     netrc (0.11.0)
+    nokogiri (1.14.2)
+      mini_portile2 (~> 2.8.0)
+      racc (~> 1.4)
     openid_connect (2.2.0)
       activemodel
       attr_required (>= 1.0.0)
@@ -116,7 +120,8 @@ GEM
       byebug (~> 11.0)
       pry (>= 0.13, < 0.15)
     public_suffix (5.0.1)
-    rack (3.0.4.2)
+    racc (1.6.2)
+    rack (3.0.6.1)
     rack-oauth2 (2.2.0)
       activesupport
       attr_required
@@ -175,6 +180,7 @@ PLATFORMS
 DEPENDENCIES
   aws-sdk-s3 (~> 1)
   kubeclient
+  nokogiri
   openid_connect
   pry-byebug
   rspec
