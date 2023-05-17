@@ -4,6 +4,7 @@ class ClusterNamespaceLister
   K8S_DEFAULT_NAMESPACES = %w[
     cert-manager
     default
+    external-secrets-operator
     ingress-controllers
     kiam
     kube-node-lease
