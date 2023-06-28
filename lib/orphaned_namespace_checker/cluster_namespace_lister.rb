@@ -19,6 +19,7 @@ class ClusterNamespaceLister
     calico-apiserver
     calico-system
     tigera-operator
+    gatekeeper-system
   ]
 
   def initialize(args)
