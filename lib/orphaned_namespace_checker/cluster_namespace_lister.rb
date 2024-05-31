@@ -20,6 +20,7 @@ class ClusterNamespaceLister
     calico-system
     tigera-operator
     gatekeeper-system
+    cloud-platform-label-pods
   ]
 
   def initialize(args)
