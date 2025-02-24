@@ -21,6 +21,7 @@ class ClusterNamespaceLister
     tigera-operator
     gatekeeper-system
     cloud-platform-label-pods
+    cloud-platform-github-teams-filter
   ]
 
   def initialize(args)
