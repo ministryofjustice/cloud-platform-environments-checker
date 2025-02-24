@@ -6,7 +6,6 @@ class ClusterNamespaceLister
     default
     external-secrets-operator
     ingress-controllers
-    kiam
     kube-node-lease
     kube-public
     kube-system
