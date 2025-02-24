@@ -1,9 +1,9 @@
-FROM hashicorp/terraform:0.14.8 AS terraform
+FROM hashicorp/terraform:1.2.5 AS terraform
 
-FROM ruby:2.7-alpine
+FROM ruby:3.1.2-alpine
 
 ENV \
-  KUBECTL_VERSION=1.21.5
+  KUBECTL_VERSION=1.29.2
 
 # Install pre-requisites for building unf_ext gem
 RUN apk --update add --virtual build_deps \
