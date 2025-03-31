@@ -78,18 +78,8 @@ This script outputs a report, detailing the namespaces which are not defined in 
 
 This script is executed regularly via Concourse, as defined [here][concourse-job], with the output piped into Slack.
 
-### bin/hosted_services.rb
-
-This script outputs a report with the list of namespaces, namespace annotations and corresponding ingresses which exists in the cluster.
-
-This script is executed regularly via Concourse, as defined [here][concourse-job-orphaned-namespace], with the output piped into Slack.
-
-### bin/post-data-to-hoodaw.sh
-This script runs and pushes the output of `bin/hosted_services.rb` to the [HOODAW] page. This is executed regulary via Concourse, as defined [here][concourse-job-hosted-services]
-
 [env-repo]: https://github.com/ministryofjustice/cloud-platform-environments
-[HOODAW]: https://how-out-of-date-are-we.apps.live-1.cloud-platform.service.justice.gov.uk/hosted_services
-[concourse-job]: https://github.com/ministryofjustice/cloud-platform-concourse/blob/main/pipelines/manager/main/reporting.yaml
+[HOODAW]: https://reports.cloud-platform.service.justice.gov.uk/dashboard
+[concourse-job]: https://github.com/ministryofjustice/cloud-platform-terraform-concourse/blob/29103846193ff84d314974047fae182742aa1286/pipelines/manager/main/reporting.yaml#L42
 [concourse-job-orphaned-namespace]: https://github.com/ministryofjustice/cloud-platform-concourse/blob/main/pipelines/manager/main/reporting.yaml#L69
-[concourse-job-hosted-services]: https://github.com/ministryofjustice/cloud-platform-concourse/blob/main/pipelines/manager/main/reporting.yaml#L384
 [release]: https://github.com/ministryofjustice/cloud-platform-environments-checker/releases

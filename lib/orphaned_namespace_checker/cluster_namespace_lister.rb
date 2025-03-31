@@ -10,8 +10,6 @@ class ClusterNamespaceLister
     kube-public
     kube-system
     kuberos
-    kuberhealthy
-    opa
     overprovision
     velero
     logging
