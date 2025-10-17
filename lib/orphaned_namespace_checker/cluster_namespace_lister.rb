@@ -19,6 +19,7 @@ class ClusterNamespaceLister
     gatekeeper-system
     cloud-platform-label-pods
     cloud-platform-github-teams-filter
+    amazon-guardduty
   ]
 
   def initialize(args)
